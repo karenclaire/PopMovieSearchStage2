@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--created by Karen Claire Ulmer, 18 Feb 2018 -->
+<!-- image credit: https://material.io/icons/#ic_movie_filter-->
+
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <FrameLayout
+        android:id="@+id/movie_detail_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <include
+        layout="@layout/movie_details"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+</FrameLayout>
