@@ -3,6 +3,7 @@ package com.example.android.popmoviesearchstage2;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.Menu;
@@ -75,8 +76,25 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_details);
         ButterKnife.bind(this);
+        Intent intent = getIntent();
 
+        if (intent == null || !intent.hasExtra(EXTRA_MOVIE)) {
+            throw new NullPointerException("Movie cannot be empty");
+        }
 
+        if (savedInstanceState == null) {
+            Movie movie = intent.getParcelableExtra(EXTRA_MOVIE);
+            ArrayList<Trailer> trailer = intent.getParcelableArrayListExtra(EXTRA_VIDEO);
+            ArrayList<Review> reviews = intent.getParcelableArrayListExtra(EXTRA_REVIEW);
+
+            DetailsFragment detailsFragment = DetailsFragment.newInstance(movie, trailer, reviews);
+            // Add the fragment to its container using a FragmentManager and a Transaction
+           FragmentManager fragmentManager = getSupportFragmentManager();
+            fragmentManager.beginTransaction()
+                    .replace(R.id.movie_detail_container, detailsFragment)
+                    .commit();
+
+        }
         }
 
 

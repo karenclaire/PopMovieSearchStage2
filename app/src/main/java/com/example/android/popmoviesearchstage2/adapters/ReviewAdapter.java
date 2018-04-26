@@ -21,6 +21,15 @@ import butterknife.ButterKnife;
 import static com.example.android.popmoviesearchstage2.DetailsActivity.EXTRA_REVIEW;
 
 
+/**
+ * References for code correction and guidance
+ *  https://github.com/karenclaire/EscrimaInventoryApp
+ *  https://www.youtube.com/watch?v=OOLFhtyCspA
+ *  https://github.com/FrangSierra/Udacity-Popular-Movies-Stage-2
+ *  https://github.com/SubhrajyotiSen/Popular-Movies-2
+ *  https://github.com/jimandreas/PopularMovies
+ */
+
 
 public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewViewHolder> {
 

@@ -16,7 +16,7 @@ import com.example.android.popmoviesearchstage2.data.MovieContract.TopRatedMovie
 
 
 /**
- * References for code correction
+ * References for code correction and guidance
  *  https://github.com/karenclaire/EscrimaInventoryApp
  *  https://www.youtube.com/watch?v=OOLFhtyCspA
  *  https://github.com/FrangSierra/Udacity-Popular-Movies-Stage-2

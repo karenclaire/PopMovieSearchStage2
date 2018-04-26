@@ -46,6 +46,12 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.android.popmoviesearchstage2.MainActivity"/>
         </activity>
+        <provider
+            android:name=".data.MovieProvider"
+            android:authorities="com.example.android.popmoviesearchstage2"
+            android:exported="false"
+            android:grantUriPermissions="true"/>
+
 
     </application>
 

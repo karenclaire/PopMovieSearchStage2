@@ -21,6 +21,16 @@ import com.example.android.popmoviesearchstage2.data.MovieContract.FavoriteMovie
 
 import static com.example.android.popmoviesearchstage2.utils.MovieUtils.getYear;
 
+
+/**
+ * References for code correction and guidance
+ *  https://github.com/karenclaire/EscrimaInventoryApp
+ *  https://www.youtube.com/watch?v=OOLFhtyCspA
+ *  https://github.com/FrangSierra/Udacity-Popular-Movies-Stage-2
+ *  https://github.com/SubhrajyotiSen/Popular-Movies-2
+ *  https://github.com/jimandreas/PopularMovies
+ */
+
 public class FavoriteMovieAdapter extends CursorAdapter{
 
     public static final String POSTER_PATH = "http://image.tmdb.org/t/p/w185//";
@@ -136,7 +146,7 @@ public class FavoriteMovieAdapter extends CursorAdapter{
                     context.getContentResolver().notifyChange(currentMovieUri, null);
                 } else {
                     // Not a favorite
-                    favoriteButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+                    favoriteButton.setImageResource(R.drawable.ic_star_white_24dp);
                     Toast.makeText(context, "Movie not in Favorite List", Toast.LENGTH_SHORT).show();
                 }
             }

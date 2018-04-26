@@ -27,6 +27,7 @@ public class FavoriteLoader extends AsyncTask<String, Void, Void> {
         mContext = context;
     }
 
+
     @Override
     protected Void doInBackground(String... strings) {
         Uri uri = FavoriteMovieEntry.buildFavoriteMoviesUri();
@@ -63,15 +64,16 @@ public class FavoriteLoader extends AsyncTask<String, Void, Void> {
                     );
                 }
             }
-             while (cursor.moveToNext());
+            while (cursor.moveToNext());
         }
-            return null;
-        }
+        return null;
+    }
 
 
     public void addFavoriteID(int movie_id) {
         mFavoritesSet.add(movie_id);
     }
+
     private static HashSet<Integer> mFavoritesSet = new HashSet<>();
 
     /**
@@ -86,6 +88,7 @@ public class FavoriteLoader extends AsyncTask<String, Void, Void> {
                 }
 
             }
+
         }
 
 
