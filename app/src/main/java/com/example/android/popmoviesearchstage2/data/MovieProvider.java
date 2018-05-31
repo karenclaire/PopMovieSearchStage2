@@ -32,7 +32,7 @@ public class MovieProvider extends ContentProvider {
     public static final String LOG_TAG = MovieProvider.class.getSimpleName();
 
     /**
-     * URI matcher code for the content URI for the Pmovie table
+     * URI matcher code for the content URI for the movie table
      */
     private static final int POPULAR_MOVIE = 100;
     private static final int TOP_RATED_MOVIE = 101;

@@ -2,6 +2,7 @@ package com.example.android.popmoviesearchstage2.loaders;
 
 import android.content.AsyncTaskLoader;
 import android.content.Context;
+import android.util.Log;
 
 import com.example.android.popmoviesearchstage2.adapters.MovieAdapter;
 import com.example.android.popmoviesearchstage2.model.Movie;
@@ -55,6 +56,7 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>>  {
      */
     @Override
     public List<Movie> loadInBackground() {
+        Log.d("MovieLoader", "loadInBackground");
         if (mUrl == null) {
             return null;
 

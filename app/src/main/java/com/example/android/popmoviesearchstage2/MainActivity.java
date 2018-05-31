@@ -27,10 +27,12 @@ import android.app.Activity;
 import android.app.LoaderManager;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -47,14 +49,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.popmoviesearchstage2.adapters.MovieAdapter;
+import com.example.android.popmoviesearchstage2.data.MovieContract;
 import com.example.android.popmoviesearchstage2.data.MovieContract.FavoriteMovieEntry;
+import com.example.android.popmoviesearchstage2.data.MovieContract.TopRatedMovieEntry;
+import com.example.android.popmoviesearchstage2.data.MovieContract.PopularMovieEntry;
 import com.example.android.popmoviesearchstage2.loaders.MovieLoader;
 import com.example.android.popmoviesearchstage2.model.Movie;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<List<Movie>>,
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
         SharedPreferences.OnSharedPreferenceChangeListener{
 
 
@@ -62,16 +67,13 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * Tag for log messages
      */
     public static final String LOG_TAG = MainActivity.class.getName();
-    /**
-     * /**
-     * URL for Movie API for tmdb
-     */
-    private static final String MOVIE_REQUEST_URL = "http://api.themoviedb.org/3/movie/popular?api_key=";
-    private static final String MOVIE_TOP_RATED_URL = "http://api.themoviedb.org/3/movie/top_rated?api_key=";
-    private static final String FAVORITE_MOVIE_URI = String.valueOf(FavoriteMovieEntry.buildFavoriteMoviesUri());
+
     private final String TOP_RATED = "top_rated";
     private final String FAVORITE = "favorite";
-
+    private final String POPULAR = "popular";
+    public static final String PATH_TOP_RATED = "top_rated";
+    public static final String PATH_POPULAR = "popular";
+    public static final String PATH_FAVORITE = "favorite";
 
     /**
      * Constant value for the movie loader ID
@@ -92,7 +94,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     public Context mContext;
 
-    public MovieAdapter.MovieAdapterOnClickListener listener;
+    public MovieAdapter.MovieAdapterOnClickListener mListener;
 
     /**
      * TextView that is displayed when the list is empty
@@ -110,6 +112,30 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     private GridLayoutManager layoutManager;
 
+    CursorLoader mCursorLoader;
+
+    public  String[] topRatedProjection = {
+            TopRatedMovieEntry.COLUMN_MOVIE_ID,
+            TopRatedMovieEntry.COLUMN_TITLE,
+            TopRatedMovieEntry.COLUMN_VOTE_AVERAGE,
+            TopRatedMovieEntry.COLUMN_RELEASE_DATE,
+            TopRatedMovieEntry.COLUMN_POSTER_PATH};
+
+    public  String[] favoriteProjection = {
+            FavoriteMovieEntry.COLUMN_MOVIE_ID,
+            FavoriteMovieEntry.COLUMN_TITLE,
+            FavoriteMovieEntry.COLUMN_VOTE_AVERAGE,
+            FavoriteMovieEntry.COLUMN_RELEASE_DATE,
+            FavoriteMovieEntry.COLUMN_POSTER_PATH};
+
+    public  String[] popularProjection = {
+            PopularMovieEntry.COLUMN_MOVIE_ID,
+            PopularMovieEntry.COLUMN_TITLE,
+            PopularMovieEntry.COLUMN_VOTE_AVERAGE,
+            PopularMovieEntry.COLUMN_RELEASE_DATE,
+            PopularMovieEntry.COLUMN_POSTER_PATH};
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -117,6 +143,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
         mRecyclerView = findViewById(R.id.recyclerview_grid);
+        assert mRecyclerView != null;
 
         /*
          * Use this setting to improve performance if you know that changes in content
@@ -131,8 +158,10 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
 
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        mMovieAdapter = new MovieAdapter(mContext, moviesList, mListener);
         mRecyclerView.setAdapter(mMovieAdapter);
-        mMovieAdapter.notifyDataSetChanged();
+        //mMovieAdapter.notifyDataSetChanged(); --implement in movieAdapter
 
         // Find the reference to the progress bar in a layout
         mProgressBar = findViewById(R.id.pb_loading_indicator);
@@ -195,47 +224,61 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public Loader<List<Movie>> onCreateLoader(int id, Bundle args) {
+    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+        // Define a projection that specifies the columns from the table we care about.
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-        Uri baseUri;
+        String preferenceSortOrder = sharedPrefs.getString(getString(R.string.pref_sorting_criteria_key),
+                getString(R.string.pref_sorting_criteria_default_value));
 
-        String sortOrder = sharedPrefs.getString(getString(R.string.pref_sorting_criteria_key), getString(R.string.pref_sorting_criteria_default_value));
+        switch (loaderId) {
 
-        if (prefSortOrder != null && !sortOrder.equals(prefSortOrder)) {
+            case MOVIE_LOADER_ID:
+                if (prefSortOrder != null && preferenceSortOrder.contains(TOP_RATED)){
+                    return new CursorLoader(this,   // Parent activity context
+                            TopRatedMovieEntry.CONTENT_URI,   // Provider content URI to query
+                            topRatedProjection,             // Columns to include in the resulting Cursor
+                            null,                   // No selection clause
+                            null,                   // No selection arguments
+                            null);
+               }else if (prefSortOrder != null && preferenceSortOrder.contains(FAVORITE)){
+                    return new CursorLoader(this,   // Parent activity context
+                            FavoriteMovieEntry.CONTENT_URI,   // Provider content URI to query
+                            favoriteProjection,             // Columns to include in the resulting Cursor
+                            null,                   // No selection clause
+                            null,                   // No selection arguments
+                            null);
 
-            if (sortOrder.contains(TOP_RATED)) {
-                baseUri = Uri.parse(MOVIE_TOP_RATED_URL);
-            }
-            if (sortOrder.contains(FAVORITE)) {
-                baseUri = Uri.parse(FAVORITE_MOVIE_URI);
-
-
-            } else {
-                prefSortOrder = sortOrder;
-                baseUri = Uri.parse(MOVIE_REQUEST_URL);
-            }
-
-            Uri.Builder uriBuilder = baseUri.buildUpon();
-            return new MovieLoader(this, uriBuilder.toString());
+                }else {
+                    return new CursorLoader(this,   // Parent activity context
+                            PopularMovieEntry.CONTENT_URI,   // Provider content URI to query
+                            popularProjection,             // Columns to include in the resulting Cursor
+                            null,                   // No selection clause
+                            null,                   // No selection arguments
+                            null);
+                }
+            default:
+                throw new RuntimeException("Loader Not Implemented: " + loaderId);
         }
-        return null;
     }
 
-    @Override
-    public void onLoadFinished(Loader<List<Movie>> loader, List<Movie> movies) {
-        mEmptyStateTextView.setText(R.string.no_movies);
-        mProgressBar.setVisibility(View.GONE);
-        moviesList.clear();
 
-        if ((mMovie != null)) {
-           moviesList.addAll(movies);
-        }
+
+   @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        // Update {@link MovieAdapter} with this new cursor containing updated Movie data
+       mMovieAdapter.swapCursor(cursor);
+       mEmptyStateTextView.setText(R.string.no_movies);
+       mProgressBar.setVisibility(View.GONE);
+
+
     }
+
 
 
     @Override
     public void onLoaderReset(Loader loader) {
-        moviesList.clear();
+        //  clear the Cursor
+        mMovieAdapter.swapCursor(null);
 
     }
 

@@ -11,7 +11,7 @@
         xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
 
         android:background="#000000">
 
@@ -236,7 +236,7 @@
             android:layout_marginTop="@dimen/margin_top_bottom_sides"
             android:orientation="vertical"
             app:layout_constraintTop_toBottomOf="@id/rating_year_duration"
-            app:layout_constraintBottom_toTopOf="@+id/reviews">
+            app:layout_constraintBottom_toTopOf="@+id/review_container">
 
             <TextView
                 android:id="@+id/tv_summary"

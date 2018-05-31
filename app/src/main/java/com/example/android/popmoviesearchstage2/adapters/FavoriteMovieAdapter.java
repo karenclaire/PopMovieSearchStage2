@@ -36,6 +36,7 @@ public class FavoriteMovieAdapter extends CursorAdapter{
     public static final String POSTER_PATH = "http://image.tmdb.org/t/p/w185//";
    static public String favoriteMovie;
 
+    Context mContext;
     public FavoriteMovieAdapter(MainActivity context, Cursor c) {
         super(context, c, 0);
 

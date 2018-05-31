@@ -79,6 +79,7 @@ public class MovieUtils {
          * Returns new URL object from the given string URL.
          */
         private static URL createUrl(String stringUrl) {
+            Log.d("your info", "stringUrl "+ "stringURL");
             URL url = null;
             try {
                 url = new URL(stringUrl);

@@ -1,7 +1,7 @@
 package com.example.android.popmoviesearchstage2.adapters;
 
 import android.content.Context;
-import android.content.Intent;
+import android.database.Cursor;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,15 +9,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.example.android.popmoviesearchstage2.DetailsActivity;
 import com.example.android.popmoviesearchstage2.R;
+import com.example.android.popmoviesearchstage2.data.MovieContract;
+import com.example.android.popmoviesearchstage2.data.MovieContract.PopularMovieEntry;
+import com.example.android.popmoviesearchstage2.data.MovieContract.TopRatedMovieEntry;
+import com.example.android.popmoviesearchstage2.data.MovieContract.FavoriteMovieEntry;
 import com.example.android.popmoviesearchstage2.model.Movie;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -34,15 +37,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     /* The context we use to utility methods, app resources and layout inflaters */
     private Context mContext;
 
-    public static final String POSTER_PATH = "http://image.tmdb.org/t/p/w185//";
+    public static final String POSTER_PATH = "http://image.tmdb.org/t/p/w185//" ;
 
-
+    boolean favorite = true;
 
     final private MovieAdapterOnClickListener mOnClickListener;
 
     private ArrayList<Movie> moviesList;
+    Cursor mCursor;
 
-
+    private int mPosition = -1;
     public ImageView posterImageView;
 
     public TextView dateTextView;
@@ -53,10 +57,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private ImageButton mFavoriteButton;
     private CardView mCardView;
 
-
+    private static final int VIEW_TYPE_TOP_RATED = 1;
+    private static final int VIEW_TYPE_FAVORITE = 2;
+    private static final int VIEW_TYPE_POPULAR = 0;
 
     public interface MovieAdapterOnClickListener {
-        void onMovieClick(int clickMovieIndex);
+        void onMovieClick(Long date, MovieAdapterViewHolder viewHolder);
 
     }
 
@@ -70,36 +76,100 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     @Override
     public MovieAdapterViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        Context mContext = parent.getContext();
-        int layoutId = R.layout.movie_list_item;
-        LayoutInflater inflater = LayoutInflater.from(mContext);
+        if (parent instanceof RecyclerView) {
+            Context mContext = parent.getContext();
+            int layoutId = R.layout.movie_list_item;
+            LayoutInflater inflater = LayoutInflater.from(mContext);
 
-        View view = inflater.inflate(layoutId, parent, false);
-        MovieAdapterViewHolder holder = new MovieAdapterViewHolder(view);
+            View view = inflater.inflate(layoutId, parent, false);
+            MovieAdapterViewHolder holder = new MovieAdapterViewHolder(view);
 
-        return holder;
+            return holder;
+        } else {
+            throw new RuntimeException("Not bound to RecyclerView");
+        }
     }
 
     @Override
-    public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
+    public void onBindViewHolder(MovieAdapterViewHolder holder, int viewType) {
 
-        currentMovie = moviesList.get(position);
-        holder.ratingTextView.setText(currentMovie.getVoteAverage());
-        holder.dateTextView.setText(currentMovie.getReleaseDate());
+        if (!mCursor.moveToFirst()) {
+            return;
+        }
 
+       switch (viewType) {
 
-        Picasso.with(mContext)
-                .load(MovieAdapter.POSTER_PATH + currentMovie.getPosterPath())
-                .into(holder.posterImageView);
+            case VIEW_TYPE_POPULAR:
 
+                int id = mCursor.getInt(mCursor.getColumnIndex(PopularMovieEntry._ID));
+                int releaseDateColumnIndex = mCursor.getColumnIndex(PopularMovieEntry.COLUMN_RELEASE_DATE);
+                int voteAverageColumnIndex = mCursor.getColumnIndex(PopularMovieEntry.COLUMN_VOTE_AVERAGE);
+                int posterColumnIndex = mCursor.getColumnIndex(PopularMovieEntry.COLUMN_POSTER_PATH);
+
+                final String releaseDate = mCursor.getString(releaseDateColumnIndex);
+                final float voteAverage = (mCursor.getFloat(voteAverageColumnIndex));
+                final String posterPath = mCursor.getString(posterColumnIndex);
+
+                final String voteAverageOutput = String.valueOf(voteAverage);
+
+                holder.dateTextView.setText(releaseDate);
+                holder.ratingTextView.setText(voteAverageOutput);
+
+                Picasso.with(mContext)
+                        .load(posterPath)
+                        .into(holder.posterImageView);
+
+                break;
+
+            case VIEW_TYPE_TOP_RATED:
+                int topRatedId = mCursor.getInt(mCursor.getColumnIndex(TopRatedMovieEntry._ID));
+                int topRatedReleaseDateColumnIndex = mCursor.getColumnIndex(TopRatedMovieEntry.COLUMN_RELEASE_DATE);
+                int topRatedVoteAverageColumnIndex = mCursor.getColumnIndex(TopRatedMovieEntry.COLUMN_VOTE_AVERAGE);
+                int topRatedPosterColumnIndex = mCursor.getColumnIndex(TopRatedMovieEntry.COLUMN_POSTER_PATH);
+
+                final String topRatedReleaseDate = mCursor.getString(topRatedReleaseDateColumnIndex);
+                final float topRatedVoteAverage = (mCursor.getFloat(topRatedVoteAverageColumnIndex));
+                final String topRatedPosterPath = mCursor.getString(topRatedPosterColumnIndex);
+
+                final String topRatedVoteAverageOutput = String.valueOf(topRatedVoteAverage);
+
+                holder.dateTextView.setText(topRatedReleaseDate);
+                holder.ratingTextView.setText(topRatedVoteAverageOutput);
+
+                Picasso.with(mContext)
+                        .load(topRatedPosterPath)
+                        .into(holder.posterImageView);
+             break;
+
+            case VIEW_TYPE_FAVORITE:
+                int favoriteRatedId = mCursor.getInt(mCursor.getColumnIndex(FavoriteMovieEntry._ID));
+                int favoriteReleaseDateColumnIndex = mCursor.getColumnIndex(FavoriteMovieEntry.COLUMN_RELEASE_DATE);
+                int favoriteVoteAverageColumnIndex = mCursor.getColumnIndex(FavoriteMovieEntry.COLUMN_VOTE_AVERAGE);
+                int favoritePosterColumnIndex = mCursor.getColumnIndex(FavoriteMovieEntry.COLUMN_POSTER_PATH);
+
+                final String favoriteReleaseDate = mCursor.getString(favoriteReleaseDateColumnIndex);
+                final float favoriteVoteAverage = (mCursor.getFloat(favoriteVoteAverageColumnIndex));
+                final String favoritePosterPath = mCursor.getString(favoritePosterColumnIndex);
+
+                final String favoriteVoteAverageOutput = String.valueOf(favoriteVoteAverage);
+
+                holder.dateTextView.setText(favoriteReleaseDate);
+                holder.ratingTextView.setText(favoriteVoteAverageOutput);
+
+                Picasso.with(mContext)
+                        .load(favoritePosterPath)
+                        .into(holder.posterImageView);
+                break;
+        }
 
     }
-
     @Override
     public int getItemCount() {
-        return (moviesList == null) ? 0 : moviesList.size();
-        //return moviesList.size();
+        if (null == mCursor) return 0;
+        return mCursor.getCount();
     }
+        //return (moviesList == null) ? 0 : moviesList.size();
+        //return moviesList.size();
 
 
 
@@ -112,9 +182,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         ImageView posterImageView;
         @BindView(R.id.favorite_button)
         ImageButton mFavoriteButton;
-        @BindView (R.id.detail_cardview)
+        @BindView(R.id.detail_cardview)
         CardView mCardView;
-
+        @BindView(R.id.movie_list_item_layout)
+        LinearLayout mListItemLayout;
 
 
         MovieAdapterViewHolder(View view) {
@@ -130,25 +201,17 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         // Set an item click listener on the RecyclerView, which sends an intent to a web browser
         @Override
         public void onClick(View view) {
-            Movie movieInformation = new Movie(currentMovie.getId(), currentMovie.getTitle(),
-                    currentMovie.getReleaseDate(), currentMovie.getOverview(),
-                    currentMovie.getVoteAverage(), currentMovie.getPosterPath());
+            int adapterPosition = getAdapterPosition();
+            mCursor.moveToPosition(adapterPosition);
 
-            Intent intent = new Intent(mContext, DetailsActivity.class);
-            intent.putExtra(DetailsActivity.EXTRA_MOVIE, movieInformation);
-            intent.putExtra(DetailsActivity.EXTRA_POSTER, POSTER_PATH + currentMovie.getPosterPath());
-            mContext.startActivity(intent);
-
+            int movie_id_column = mCursor.getColumnIndex(MovieContract.PopularMovieEntry.COLUMN_MOVIE_ID);
+            if (movie_id_column == -1) {
+                return;
+            }
+            long movie_id = mCursor.getLong(movie_id_column);
+            mOnClickListener.onMovieClick(movie_id, this);  // pass the movie ID to the fragment
         }
+
+
     }
-
-
-    public void setMovieList(List<Movie> moviesList) {
-        this.moviesList.clear();
-        this.moviesList.addAll(moviesList);
-        // The adapter needs to know that the data has changed
-        notifyDataSetChanged();
-    }
-
-
 }
