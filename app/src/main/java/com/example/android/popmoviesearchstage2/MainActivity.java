@@ -35,9 +35,9 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -49,17 +49,14 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.example.android.popmoviesearchstage2.adapters.MovieAdapter;
-import com.example.android.popmoviesearchstage2.data.MovieContract;
 import com.example.android.popmoviesearchstage2.data.MovieContract.FavoriteMovieEntry;
 import com.example.android.popmoviesearchstage2.data.MovieContract.TopRatedMovieEntry;
 import com.example.android.popmoviesearchstage2.data.MovieContract.PopularMovieEntry;
-import com.example.android.popmoviesearchstage2.loaders.MovieLoader;
 import com.example.android.popmoviesearchstage2.model.Movie;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>,
+public class MainActivity extends AppCompatActivity implements android.support.v4.app.LoaderManager.LoaderCallbacks,
         SharedPreferences.OnSharedPreferenceChangeListener{
 
 
@@ -171,7 +168,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
 
         if (isConnected()) {
-            LoaderManager loaderManager = getLoaderManager();
+            android.support.v4.app.LoaderManager loaderManager = getSupportLoaderManager();
             loaderManager.initLoader(MOVIE_LOADER_ID, null, this);
 
         } else {
@@ -224,7 +221,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public Loader<Cursor> onCreateLoader(int loaderId, Bundle bundle) {
+    public android.support.v4.content.Loader onCreateLoader(int loaderId, Bundle bundle) {
         // Define a projection that specifies the columns from the table we care about.
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String preferenceSortOrder = sharedPrefs.getString(getString(R.string.pref_sorting_criteria_key),
@@ -234,14 +231,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
             case MOVIE_LOADER_ID:
                 if (prefSortOrder != null && preferenceSortOrder.contains(TOP_RATED)){
-                    return new CursorLoader(this,   // Parent activity context
+                    return new android.support.v4.content.CursorLoader(this,   // Parent activity context
                             TopRatedMovieEntry.CONTENT_URI,   // Provider content URI to query
                             topRatedProjection,             // Columns to include in the resulting Cursor
                             null,                   // No selection clause
                             null,                   // No selection arguments
                             null);
                }else if (prefSortOrder != null && preferenceSortOrder.contains(FAVORITE)){
-                    return new CursorLoader(this,   // Parent activity context
+                    return new android.support.v4.content.CursorLoader(this,   // Parent activity context
                             FavoriteMovieEntry.CONTENT_URI,   // Provider content URI to query
                             favoriteProjection,             // Columns to include in the resulting Cursor
                             null,                   // No selection clause
@@ -249,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             null);
 
                 }else {
-                    return new CursorLoader(this,   // Parent activity context
+                    return new android.support.v4.content.CursorLoader(this,   // Parent activity context
                             PopularMovieEntry.CONTENT_URI,   // Provider content URI to query
                             popularProjection,             // Columns to include in the resulting Cursor
                             null,                   // No selection clause
@@ -261,23 +258,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
         }
     }
 
-
-
-   @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+    @Override
+    public void onLoadFinished(@NonNull android.support.v4.content.Loader loader, Object data) {
         // Update {@link MovieAdapter} with this new cursor containing updated Movie data
-       mMovieAdapter.swapCursor(cursor);
-       mEmptyStateTextView.setText(R.string.no_movies);
-       mProgressBar.setVisibility(View.GONE);
-
-
+        mMovieAdapter.swapCursor(cursor);
+        mEmptyStateTextView.setText(R.string.no_movies);
+        mProgressBar.setVisibility(View.GONE);
     }
 
-
-
     @Override
-    public void onLoaderReset(Loader loader) {
-        //  clear the Cursor
+    public void onLoaderReset(@NonNull android.support.v4.content.Loader loader) {
+                //  clear the Cursor
         mMovieAdapter.swapCursor(null);
 
     }
@@ -291,7 +282,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        LoaderManager loaderManager = getLoaderManager();
+        android.support.v4.app.LoaderManager loaderManager = getSupportLoaderManager();
         loaderManager.restartLoader((MOVIE_LOADER_ID), null, this);
 
     }
