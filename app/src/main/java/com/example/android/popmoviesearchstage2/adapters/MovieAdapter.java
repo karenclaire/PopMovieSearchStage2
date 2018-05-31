@@ -2,6 +2,7 @@ package com.example.android.popmoviesearchstage2.adapters;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -14,9 +15,9 @@ import android.widget.TextView;
 
 import com.example.android.popmoviesearchstage2.R;
 import com.example.android.popmoviesearchstage2.data.MovieContract;
+import com.example.android.popmoviesearchstage2.data.MovieContract.FavoriteMovieEntry;
 import com.example.android.popmoviesearchstage2.data.MovieContract.PopularMovieEntry;
 import com.example.android.popmoviesearchstage2.data.MovieContract.TopRatedMovieEntry;
-import com.example.android.popmoviesearchstage2.data.MovieContract.FavoriteMovieEntry;
 import com.example.android.popmoviesearchstage2.model.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -44,7 +45,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     final private MovieAdapterOnClickListener mOnClickListener;
 
     private ArrayList<Movie> moviesList;
+
     Cursor mCursor;
+
+    CursorLoader mCursorLoader;
 
     private int mPosition = -1;
     public ImageView posterImageView;
@@ -171,7 +175,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         //return (moviesList == null) ? 0 : moviesList.size();
         //return moviesList.size();
 
-
+    public void swapCursor(CursorLoader newCursorLoader) {
+        mCursorLoader = newCursorLoader;
+//      After the new Cursor is set, call notifyDataSetChanged
+        notifyDataSetChanged();
+    }
 
     class MovieAdapterViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         @BindView(R.id.tv_rating)

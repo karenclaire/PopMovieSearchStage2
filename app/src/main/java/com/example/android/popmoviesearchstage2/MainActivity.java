@@ -26,16 +26,17 @@ package com.example.android.popmoviesearchstage2;
 import android.app.Activity;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.support.v4.content.CursorLoader;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.v4.app.LoaderManager;
+import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -109,6 +110,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private GridLayoutManager layoutManager;
 
     CursorLoader mCursorLoader;
+    Cursor mCursor;
 
     public  String[] topRatedProjection = {
             TopRatedMovieEntry.COLUMN_MOVIE_ID,
@@ -245,7 +247,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             null);
 
                 }else {
-                    return new android.support.v4.content.CursorLoader(this,   // Parent activity context
+                    return new CursorLoader(this,   // Parent activity context
                             PopularMovieEntry.CONTENT_URI,   // Provider content URI to query
                             popularProjection,             // Columns to include in the resulting Cursor
                             null,                   // No selection clause
@@ -258,15 +260,15 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(@NonNull android.support.v4.content.Loader loader, Object data) {
+    public void onLoadFinished(@NonNull Loader loader, Object cursor) {
         // Update {@link MovieAdapter} with this new cursor containing updated Movie data
-        mMovieAdapter.swapCursor(cursor);
+        mMovieAdapter.swapCursor(mCursorLoader);
         mEmptyStateTextView.setText(R.string.no_movies);
         mProgressBar.setVisibility(View.GONE);
     }
 
     @Override
-    public void onLoaderReset(@NonNull android.support.v4.content.Loader loader) {
+    public void onLoaderReset(@NonNull Loader loader) {
                 //  clear the Cursor
         mMovieAdapter.swapCursor(null);
 
