@@ -24,20 +24,19 @@ package com.example.android.popmoviesearchstage2;
 
 
 import android.app.Activity;
-import android.app.LoaderManager;
 import android.content.Context;
 import android.content.ContextWrapper;
-import android.content.CursorLoader;
+import android.support.v4.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.Loader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -50,13 +49,13 @@ import android.widget.TextView;
 
 import com.example.android.popmoviesearchstage2.adapters.MovieAdapter;
 import com.example.android.popmoviesearchstage2.data.MovieContract.FavoriteMovieEntry;
-import com.example.android.popmoviesearchstage2.data.MovieContract.TopRatedMovieEntry;
 import com.example.android.popmoviesearchstage2.data.MovieContract.PopularMovieEntry;
+import com.example.android.popmoviesearchstage2.data.MovieContract.TopRatedMovieEntry;
 import com.example.android.popmoviesearchstage2.model.Movie;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements android.support.v4.app.LoaderManager.LoaderCallbacks,
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks,
         SharedPreferences.OnSharedPreferenceChangeListener{
 
 
@@ -168,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements android.support.v
 
 
         if (isConnected()) {
-            android.support.v4.app.LoaderManager loaderManager = getSupportLoaderManager();
+            LoaderManager loaderManager = getSupportLoaderManager();
             loaderManager.initLoader(MOVIE_LOADER_ID, null, this);
 
         } else {
@@ -221,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements android.support.v
     }
 
     @Override
-    public android.support.v4.content.Loader onCreateLoader(int loaderId, Bundle bundle) {
+    public Loader onCreateLoader(int loaderId, Bundle bundle) {
         // Define a projection that specifies the columns from the table we care about.
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String preferenceSortOrder = sharedPrefs.getString(getString(R.string.pref_sorting_criteria_key),
@@ -231,14 +230,14 @@ public class MainActivity extends AppCompatActivity implements android.support.v
 
             case MOVIE_LOADER_ID:
                 if (prefSortOrder != null && preferenceSortOrder.contains(TOP_RATED)){
-                    return new android.support.v4.content.CursorLoader(this,   // Parent activity context
+                    return new CursorLoader(this,   // Parent activity context
                             TopRatedMovieEntry.CONTENT_URI,   // Provider content URI to query
                             topRatedProjection,             // Columns to include in the resulting Cursor
                             null,                   // No selection clause
                             null,                   // No selection arguments
                             null);
                }else if (prefSortOrder != null && preferenceSortOrder.contains(FAVORITE)){
-                    return new android.support.v4.content.CursorLoader(this,   // Parent activity context
+                    return new CursorLoader(this,   // Parent activity context
                             FavoriteMovieEntry.CONTENT_URI,   // Provider content URI to query
                             favoriteProjection,             // Columns to include in the resulting Cursor
                             null,                   // No selection clause
@@ -282,7 +281,7 @@ public class MainActivity extends AppCompatActivity implements android.support.v
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        android.support.v4.app.LoaderManager loaderManager = getSupportLoaderManager();
+        LoaderManager loaderManager = getSupportLoaderManager();
         loaderManager.restartLoader((MOVIE_LOADER_ID), null, this);
 
     }
