@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mMovieAdapter = new MovieAdapter(mContext, moviesList, mListener);
         mRecyclerView.setAdapter(mMovieAdapter);
-        //mMovieAdapter.notifyDataSetChanged(); --implement in movieAdapter
+        
 
         // Find the reference to the progress bar in a layout
         mProgressBar = findViewById(R.id.pb_loading_indicator);
