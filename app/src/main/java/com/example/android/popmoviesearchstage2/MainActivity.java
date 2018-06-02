@@ -32,6 +32,7 @@ import android.content.res.Configuration;
 import android.database.Cursor;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
@@ -42,6 +43,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -56,7 +58,7 @@ import com.example.android.popmoviesearchstage2.model.Movie;
 
 import java.util.ArrayList;
 
-public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks,
+public class MainActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks <Cursor>,
         SharedPreferences.OnSharedPreferenceChangeListener{
 
 
@@ -64,6 +66,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
      * Tag for log messages
      */
     public static final String LOG_TAG = MainActivity.class.getName();
+    private static final String DEBUG_TAG = "Debug";
 
     private final String TOP_RATED = "top_rated";
     private final String FAVORITE = "favorite";
@@ -108,6 +111,9 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     private RecyclerView mRecyclerView;
 
     private GridLayoutManager layoutManager;
+
+    private static final String MOVIE_REQUEST_URL = "http://api.themoviedb.org/3/movie/popular?api_key=";
+
 
     CursorLoader mCursorLoader;
     Cursor mCursor;
@@ -159,7 +165,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
         mMovieAdapter = new MovieAdapter(mContext, moviesList, mListener);
         mRecyclerView.setAdapter(mMovieAdapter);
-        
+
 
         // Find the reference to the progress bar in a layout
         mProgressBar = findViewById(R.id.pb_loading_indicator);
@@ -223,15 +229,17 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public Loader onCreateLoader(int loaderId, Bundle bundle) {
+        Log.d(DEBUG_TAG, "MainActivity onCreateLoader " + String.valueOf(loaderId));
         // Define a projection that specifies the columns from the table we care about.
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String preferenceSortOrder = sharedPrefs.getString(getString(R.string.pref_sorting_criteria_key),
                 getString(R.string.pref_sorting_criteria_default_value));
-
+       Uri baseUri;
         switch (loaderId) {
 
             case MOVIE_LOADER_ID:
                 if (prefSortOrder != null && preferenceSortOrder.contains(TOP_RATED)){
+                    Log.d(DEBUG_TAG, "MainActivity topRatedSortOrder " + prefSortOrder);
                     return new CursorLoader(this,   // Parent activity context
                             TopRatedMovieEntry.CONTENT_URI,   // Provider content URI to query
                             topRatedProjection,             // Columns to include in the resulting Cursor
@@ -239,6 +247,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             null,                   // No selection arguments
                             null);
                }else if (prefSortOrder != null && preferenceSortOrder.contains(FAVORITE)){
+                    Log.d(DEBUG_TAG, "MainActivity favoriteSortOrder " + prefSortOrder);
                     return new CursorLoader(this,   // Parent activity context
                             FavoriteMovieEntry.CONTENT_URI,   // Provider content URI to query
                             favoriteProjection,             // Columns to include in the resulting Cursor
@@ -246,13 +255,14 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
                             null,                   // No selection arguments
                             null);
 
-                }else {
+                }else {Log.d(DEBUG_TAG, "MainActivity defaultSortOrder " + prefSortOrder);
                     return new CursorLoader(this,   // Parent activity context
                             PopularMovieEntry.CONTENT_URI,   // Provider content URI to query
                             popularProjection,             // Columns to include in the resulting Cursor
                             null,                   // No selection clause
                             null,                   // No selection arguments
                             null);
+
                 }
             default:
                 throw new RuntimeException("Loader Not Implemented: " + loaderId);
@@ -260,15 +270,18 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
     }
 
     @Override
-    public void onLoadFinished(@NonNull Loader loader, Object cursor) {
+    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
+        Log.d(DEBUG_TAG, "MainActivity OnLoadFinished");
         // Update {@link MovieAdapter} with this new cursor containing updated Movie data
-        mMovieAdapter.swapCursor(mCursorLoader);
+        mMovieAdapter.swapCursor(mCursor);
         mEmptyStateTextView.setText(R.string.no_movies);
         mProgressBar.setVisibility(View.GONE);
     }
 
+
     @Override
     public void onLoaderReset(@NonNull Loader loader) {
+        Log.d(DEBUG_TAG, "OnCreate Loader Reset");
                 //  clear the Cursor
         mMovieAdapter.swapCursor(null);
 
@@ -276,6 +289,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     protected void onDestroy() {
+        Log.d(DEBUG_TAG, "MainActivity OnDestroy");
         super.onDestroy();
         PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
 
@@ -283,6 +297,7 @@ public class MainActivity extends AppCompatActivity implements LoaderManager.Loa
 
     @Override
     public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(DEBUG_TAG, "MainActivity OnSharedPreference");
         LoaderManager loaderManager = getSupportLoaderManager();
         loaderManager.restartLoader((MOVIE_LOADER_ID), null, this);
 

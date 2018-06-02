@@ -1,8 +1,8 @@
 package com.example.android.popmoviesearchstage2.data;
 
 public class API {
-    static public String API_URL = "http://api.themoviedb.org/3/discover/movie";
-    static public String API_KEY = "";
+    static public String MOVIE_BASE_URL = "http://api.themoviedb.org/3/movie/";
+    static public String API_KEY = " ";
     static public String IMAGE_URL = "http://image.tmdb.org/t/p/";
     static public String IMAGE_SIZE_185 = "w185";
 

@@ -175,8 +175,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         //return (moviesList == null) ? 0 : moviesList.size();
         //return moviesList.size();
 
-    public void swapCursor(CursorLoader newCursorLoader) {
-        mCursorLoader = newCursorLoader;
+    public void swapCursor(Cursor newCursor) {
+        mCursor = newCursor;
 //      After the new Cursor is set, call notifyDataSetChanged
         notifyDataSetChanged();
     }

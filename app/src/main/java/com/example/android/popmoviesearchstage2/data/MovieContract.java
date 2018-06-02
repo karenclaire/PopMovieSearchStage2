@@ -4,12 +4,15 @@ import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 /**
  * Created by Karen Claire Ulmer on 11 April 2018.
  */
 
 public class MovieContract {
+
+    public static final String DEBUG_TAG = "Debug";
 
     private MovieContract(){}
 
@@ -106,12 +109,14 @@ public class MovieContract {
         }
 
         public static Uri buildPopularMoviesUri() {
+            Log.d(DEBUG_TAG, "MovieContract buildPopularMoviesUri");
             return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_POPULAR)
                     .build();
         }
 
         public static Uri buildMovieDetails() {
+            Log.d(DEBUG_TAG, "MovieContract buildMoviesDetails");
             return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_POPULAR)
                     .appendPath(PATH_MOVIE)
@@ -198,23 +203,26 @@ public class MovieContract {
 
 
         public static Uri buildMovieDetailsUri(long id) {
+            Log.d(DEBUG_TAG, "MovieContract buildMoviesDetailsUri");
             return ContentUris.withAppendedId(buildMovieDetails(), id);
         }
 
         public static Uri buildTopRatedMoviesUri() {
+            Log.d(DEBUG_TAG, "MovieContract buildTopRatedMoviesDetailsUri");
             return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_TOP_RATED)
                     .build();
         }
 
         public static Uri buildMovieDetails() {
+            Log.d(DEBUG_TAG, "MovieContract buildMoviesDetails for TopRated");
             return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_TOP_RATED)
                     .appendPath(PATH_MOVIE)
                     .build();
         }
 
-        public static Uri buildMovieDetails(String movie_id) {
+        /**public static Uri buildMovieDetails(String movie_id) {
             return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_MOVIE)
                     .appendPath(movie_id)
@@ -222,7 +230,7 @@ public class MovieContract {
         }
         public static String getMovieIDFromUri(Uri uri) {
             return uri.getPathSegments().get(2);
-        }
+        }**/
     }
 
     public static final class FavoriteMovieEntry implements BaseColumns {
@@ -300,20 +308,22 @@ public class MovieContract {
         }
 
         public static Uri buildFavoriteMoviesUri() {
+            Log.d(DEBUG_TAG, "MovieContract buildFavorieMoviesUri");
             return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_FAVORITE)
                     .build();
         }
 
-        public static Uri buildMovieFavoritesWithID(String movie_id) {
+       /** public static Uri buildMovieFavoritesWithID(String movie_id) {
             return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_FAVORITE)
                     .appendPath(movie_id)
                     .build();
-        }
+        }**/
 
         public static Uri buildMovieDetails() {
-            return BASE_CONTENT_URI.buildUpon()
+            Log.d(DEBUG_TAG, "MovieContract buildMoviesDetailsUri for Favorites");
+                        return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_FAVORITE)
                     .appendPath(PATH_MOVIE)
                     .build();

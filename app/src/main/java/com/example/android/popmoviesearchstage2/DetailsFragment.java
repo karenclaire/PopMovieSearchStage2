@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -42,6 +43,8 @@ public class DetailsFragment extends Fragment {
     public static final String EXTRA_VIDEO = "intent_video";
     public static final String EXTRA_REVIEW = "intent_review";
 
+    public static final String DEBUG_TAG = "Debug";
+
     public static final String REVIEW_PATH ="http://api.themoviedb.org/3/movie/" + "id" + "?&append_to_response=reviews";
     final String MOVIE_ID = "id";
 
@@ -70,10 +73,12 @@ public class DetailsFragment extends Fragment {
     private String posterPath;
     public static final String VIDEO_PATH = "https://www.youtube.com/watch?v=";
 
-    public List<Trailer> mTrailerList = new ArrayList<>();
+    public ArrayList<Trailer> mTrailerList = new ArrayList<>();
     private TrailerAdapter mTrailerAdapter;
     private TrailerAdapterListener mTrailerAdapterListener;
     private Trailer mTrailer;
+
+    int mCurrentPosition;
 
     private ArrayList<Review> mReviewList = new ArrayList<>();
     public ReviewAdapter mReviewAdapter;
@@ -95,6 +100,7 @@ public class DetailsFragment extends Fragment {
     }
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+        Log.d(DEBUG_TAG, "DetailsFragment OnCreateViews line 99");
         View rootView = inflater.inflate(R.layout.movie_details, container, false);
         ButterKnife.bind(this, rootView);
         //Intent intent = getIntent();
@@ -144,19 +150,22 @@ public class DetailsFragment extends Fragment {
         trailerRecycler.setAdapter(mTrailerAdapter);
         trailerContainer.setVisibility(View.VISIBLE);
 
-       /** if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+        /**if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
             trailerRecycler.addOnItemTouchListener(new TrailerAdapterListener(getContext(), (view, position) -> {
-                mTrailer = mTrailerList.get(position);
-                String url = "https://www.youtube.com/watch?v=".concat(mTrailer.getKey());
-                //String url = "http://api.themoviedb.org/3/movie/" + MOVIE_ID + "?&append_to_response=trailers";
+                mTrailer = mTrailerList.get(mCurrentPosition);
+                //String url = "https://www.youtube.com/watch?v=".concat(mTrailer.getKey());
+                String url = "http://api.themoviedb.org/3/movie/" + MOVIE_ID + "?&append_to_response=trailers";
                 Intent i = new Intent(Intent.ACTION_VIEW);
                 i.setData(Uri.parse(url));
                 startActivity(i);
 
-            }));**/
-        }
+            }) {**/
+
+            }
+
 
     public void showReviews() {
+        Log.d(DEBUG_TAG, "DetailsFragment Show Reviews Error line 163");
         LinearLayoutManager linearLayoutManager = new LinearLayoutManager(getActivity());
         reviewRecycler.setLayoutManager(linearLayoutManager);
         mReviewAdapter = new ReviewAdapter(mContext, mReviewList, mReviewAdapterListener);
@@ -171,9 +180,9 @@ public class DetailsFragment extends Fragment {
                 i.setData(Uri.parse(url));
                 startActivity(i);
 
-            }));
-        }**/
-    }
+            }));**/
+        }
+
     @Override public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         if (moviesList != null) {

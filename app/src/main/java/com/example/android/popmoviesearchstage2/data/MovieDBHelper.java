@@ -22,6 +22,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
 
 
     final String LOG_TAG = MovieDBHelper.class.getSimpleName();
+    public static final String DEBUG_TAG = "Debug";
 
     /** Name of the database file */
     private static final String DATABASE_NAME = "movie.db";
@@ -50,6 +51,7 @@ public class MovieDBHelper extends SQLiteOpenHelper {
 
         @Override
         public void onCreate(SQLiteDatabase db){
+
             // Create a String that contains the SQL statement to create the movie table
             String SQL_CREATE_MOVIE_TABLE =  "CREATE TABLE " + PopularMovieEntry.TABLE_NAME + " ("
                     + PopularMovieEntry._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "

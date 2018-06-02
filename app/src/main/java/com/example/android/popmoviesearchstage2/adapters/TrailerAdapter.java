@@ -65,7 +65,10 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         holder.trailerTextView.setText(trailer.getName());
         holder.setOnClickListener(mTrailerAdapterListener, position);
 
+
+
         String trailerThumbnail = API.makeTrailerThumbnailURL((mTrailerList.get(position).getKey()));
+        //String trailerThumbnail = "https://img.youtube.com/vi/" + mTrailerList.get(position).getKey() + "/0.jpg");
         ImageView imageView = holder.itemView.findViewById(R.id.trailer_image);
         Picasso.with(mContext)
                 .load(trailerThumbnail)

@@ -9,10 +9,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
-import com.example.android.popmoviesearchstage2.data.MovieContract.FavoriteMovieEntry;
 import com.example.android.popmoviesearchstage2.data.MovieContract.PopularMovieEntry;
-import com.example.android.popmoviesearchstage2.data.MovieContract.TopRatedMovieEntry;
 
 
 /**
@@ -30,6 +29,10 @@ public class MovieProvider extends ContentProvider {
      * Tag for the log messages
      */
     public static final String LOG_TAG = MovieProvider.class.getSimpleName();
+
+    //Mental note: tag debugs with a different TAG
+    private static final String DEBUG_TAG = "Debug";
+
 
     /**
      * URI matcher code for the content URI for the movie table
@@ -54,6 +57,7 @@ public class MovieProvider extends ContentProvider {
      * It's common to use NO_MATCH as the input for this case.
      */
     private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+
 
     // Static initializer. This is run the first time anything is called from this class.
     static {
@@ -96,6 +100,7 @@ public class MovieProvider extends ContentProvider {
     @Override
     public Cursor query(@NonNull Uri uri, @Nullable String[] projection, @Nullable String selection,
                         @Nullable String[] selectionArgs, @Nullable String sortOrder) {
+        Log.d(DEBUG_TAG,"Movie Provider Cursor query:start - uri: " + uri.toString());
         // Get readable database
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
 
@@ -113,7 +118,7 @@ public class MovieProvider extends ContentProvider {
                             selection, selectionArgs, null, null, sortOrder);
                     break;
                 }
-                case TOP_RATED_MOVIE: {
+               /** case TOP_RATED_MOVIE: {
                     cursor = database.query(MovieContract.TopRatedMovieEntry.TABLE_NAME, projection,
                             selection, selectionArgs, null, null, sortOrder);
                     break;
@@ -122,7 +127,7 @@ public class MovieProvider extends ContentProvider {
                     cursor = database.query(MovieContract.TopRatedMovieEntry.TABLE_NAME, projection,
                             selection, selectionArgs, null, null, sortOrder);
                     break;
-                }
+                }**/
 
                 // For the MOVIE_ID code, extract out the ID from the URI.
                 // The selection will be "_id=?" and the selection argument will be a
@@ -142,7 +147,7 @@ public class MovieProvider extends ContentProvider {
                     break;
                 }
 
-                case TOP_RATED_MOVIE_DETAIL: {
+                /**case TOP_RATED_MOVIE_DETAIL: {
                     selection = MovieContract.TopRatedMovieEntry.COLUMN_MOVIE_ID + "=?";
                     selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                     // This will perform a query on the movie table where the _id  will return a
@@ -160,7 +165,7 @@ public class MovieProvider extends ContentProvider {
                     cursor = database.query(MovieContract.FavoriteMovieEntry.TABLE_NAME, projection, selection, selectionArgs,
                             null, null, sortOrder);
                     break;
-                }
+                }**/
 
                 default:
                     throw new IllegalArgumentException("Cannot query unknown URI " + uri);
@@ -183,21 +188,21 @@ public class MovieProvider extends ContentProvider {
             case POPULAR_MOVIE: {
                 return MovieContract.PopularMovieEntry.CONTENT_LIST_TYPE;
             }
-            case TOP_RATED_MOVIE: {
+            /**case TOP_RATED_MOVIE: {
                 return MovieContract.TopRatedMovieEntry.CONTENT_LIST_TYPE;
             }
             case FAVORITE_MOVIE: {
                 return MovieContract.FavoriteMovieEntry.CONTENT_LIST_TYPE;
-            }
+            }**/
             case POPULAR_MOVIE_DETAIL:{
                 return MovieContract.PopularMovieEntry.CONTENT_ITEM_TYPE;
             }
-            case TOP_RATED_MOVIE_DETAIL:{
+            /**case TOP_RATED_MOVIE_DETAIL:{
                 return MovieContract.TopRatedMovieEntry.CONTENT_ITEM_TYPE;
             }
             case FAVORITE_MOVIE_DETAIL: {
                 return MovieContract.FavoriteMovieEntry.CONTENT_ITEM_TYPE;
-            }
+            }**/
 
             default:
                 throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
@@ -223,7 +228,7 @@ public class MovieProvider extends ContentProvider {
                     throw new IllegalArgumentException("Insertion is not supported for " + uri);
                 }
             }
-            case TOP_RATED_MOVIE: {
+            /**case TOP_RATED_MOVIE: {
                 long id = db.insertOrThrow(MovieContract.TopRatedMovieEntry.TABLE_NAME, null, values);
                 if (id > 0) {
                     insertUri = MovieContract.TopRatedMovieEntry.buildTopRatedMoviesUri();
@@ -240,7 +245,7 @@ public class MovieProvider extends ContentProvider {
                 } else {
                     throw new IllegalArgumentException("Insertion is not supported for " + uri);
                 }
-            }
+            }**/
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
@@ -267,7 +272,7 @@ public class MovieProvider extends ContentProvider {
                 break;
             }
 
-            case TOP_RATED_MOVIE: {
+            /**case TOP_RATED_MOVIE: {
                 // Delete all rows that match the Top Rated Movie selection and selection args
                 rowsDeleted = database.delete(TopRatedMovieEntry.TABLE_NAME, selection, selectionArgs);
                 break;
@@ -277,7 +282,7 @@ public class MovieProvider extends ContentProvider {
                 // Delete all rows that match the Favorite Movie selection and selection args
                 rowsDeleted = database.delete(FavoriteMovieEntry.TABLE_NAME, selection, selectionArgs);
                 break;
-            }
+            }**/
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);
         }
@@ -305,7 +310,7 @@ public class MovieProvider extends ContentProvider {
                 break;
             }
 
-            case TOP_RATED_MOVIE: {
+           /** case TOP_RATED_MOVIE: {
                 // Update all rows that match the Top Rated Movie selection and selection args
                 rowsUpdated = database.update(TopRatedMovieEntry.TABLE_NAME,values, selection, selectionArgs);
                 break;
@@ -315,7 +320,7 @@ public class MovieProvider extends ContentProvider {
                 // Update all rows that match the Favorite Movie selection and selection args
                 rowsUpdated = database.update(FavoriteMovieEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
-            }
+            }**/
 
             case POPULAR_MOVIE_DETAIL: {
                 selection = PopularMovieEntry.COLUMN_MOVIE_ID + "=?";
@@ -324,7 +329,7 @@ public class MovieProvider extends ContentProvider {
                 break;
             }
 
-            case TOP_RATED_MOVIE_DETAIL: {
+           /** case TOP_RATED_MOVIE_DETAIL: {
                 selection = TopRatedMovieEntry.COLUMN_MOVIE_ID + "=?";
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 rowsUpdated = database.update(TopRatedMovieEntry.TABLE_NAME,values, selection, selectionArgs);
@@ -336,7 +341,7 @@ public class MovieProvider extends ContentProvider {
                 selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                 rowsUpdated = database.update(FavoriteMovieEntry.TABLE_NAME, values, selection, selectionArgs);
                 break;
-            }
+            }**/
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

@@ -16,6 +16,7 @@ import java.util.List;
  */
 
 public class MovieLoader extends AsyncTaskLoader<List<Movie>>  {
+    private static final String DEBUG_TAG = "Debug";
 
     /**
      * Tag for log messages
@@ -49,14 +50,15 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>>  {
     @Override
     protected void onStartLoading() {
         forceLoad();
-    }
+        Log.d(DEBUG_TAG, "Movie Loader onStartLoading Error line 51");
 
+    }
     /**
      * This is on a background thread.
      */
     @Override
     public List<Movie> loadInBackground() {
-        Log.d("MovieLoader", "loadInBackground");
+        Log.d(DEBUG_TAG, "MovieLoader loadInBackground Error line60");
         if (mUrl == null) {
             return null;
 
