@@ -118,7 +118,7 @@ public class MovieProvider extends ContentProvider {
                             selection, selectionArgs, null, null, sortOrder);
                     break;
                 }
-               /** case TOP_RATED_MOVIE: {
+               case TOP_RATED_MOVIE: {
                     cursor = database.query(MovieContract.TopRatedMovieEntry.TABLE_NAME, projection,
                             selection, selectionArgs, null, null, sortOrder);
                     break;
@@ -127,7 +127,7 @@ public class MovieProvider extends ContentProvider {
                     cursor = database.query(MovieContract.TopRatedMovieEntry.TABLE_NAME, projection,
                             selection, selectionArgs, null, null, sortOrder);
                     break;
-                }**/
+                }
 
                 // For the MOVIE_ID code, extract out the ID from the URI.
                 // The selection will be "_id=?" and the selection argument will be a
@@ -147,7 +147,7 @@ public class MovieProvider extends ContentProvider {
                     break;
                 }
 
-                /**case TOP_RATED_MOVIE_DETAIL: {
+                case TOP_RATED_MOVIE_DETAIL: {
                     selection = MovieContract.TopRatedMovieEntry.COLUMN_MOVIE_ID + "=?";
                     selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
                     // This will perform a query on the movie table where the _id  will return a
@@ -165,7 +165,7 @@ public class MovieProvider extends ContentProvider {
                     cursor = database.query(MovieContract.FavoriteMovieEntry.TABLE_NAME, projection, selection, selectionArgs,
                             null, null, sortOrder);
                     break;
-                }**/
+                }
 
                 default:
                     throw new IllegalArgumentException("Cannot query unknown URI " + uri);
@@ -228,7 +228,7 @@ public class MovieProvider extends ContentProvider {
                     throw new IllegalArgumentException("Insertion is not supported for " + uri);
                 }
             }
-            /**case TOP_RATED_MOVIE: {
+            case TOP_RATED_MOVIE: {
                 long id = db.insertOrThrow(MovieContract.TopRatedMovieEntry.TABLE_NAME, null, values);
                 if (id > 0) {
                     insertUri = MovieContract.TopRatedMovieEntry.buildTopRatedMoviesUri();
@@ -245,7 +245,7 @@ public class MovieProvider extends ContentProvider {
                 } else {
                     throw new IllegalArgumentException("Insertion is not supported for " + uri);
                 }
-            }**/
+            }
 
             default:
                 throw new UnsupportedOperationException("Unknown uri: " + uri);

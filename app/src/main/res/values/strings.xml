@@ -14,7 +14,10 @@
     <string name="favorite" translatable="false">Favorite</string>
 
 
+
     <string name="action_settings">Sort Movies</string>
+   <string name="appbar_scrolling_view_behaviour">list</string>
+
 
     <!--For settings_main sorting preferences-->
     <string name="pref_sorting_criteria_key" translatable="false">sorting_criteria</string>
@@ -30,7 +33,7 @@
     <string name="no_movies">No movies found.</string>
 
     <!-- Title of the DetailActivity -->
-    <string name="title_activity_detail">Details</string>
+    <string name="title_activity_detail">Movie Details</string>
     <!-- Title of the SettingsActivity -->
     <string name="title_activity_settings">Settings</string>
 

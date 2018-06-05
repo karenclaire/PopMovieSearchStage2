@@ -1,20 +1,6 @@
 package com.example.android.popmoviesearchstage2.loaders;
 
-import android.content.Context;
-import android.database.Cursor;
-import android.net.Uri;
-import android.os.AsyncTask;
-import android.os.Build;
-
-import com.example.android.popmoviesearchstage2.adapters.MovieAdapter;
-import com.example.android.popmoviesearchstage2.data.MovieContract.FavoriteMovieEntry;
-import com.example.android.popmoviesearchstage2.model.Movie;
-
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-
-public class FavoriteLoader extends AsyncTask<String, Void, Void> {
+/**public class FavoriteLoader extends AsyncTask<String, Void, Void> {
     private final Context mContext;
     private final List<Movie> mMovieList = new ArrayList<>();
 
@@ -79,7 +65,7 @@ public class FavoriteLoader extends AsyncTask<String, Void, Void> {
     /**
      * Go through the movies on the list to update one of them with his new favored value.
      */
-    private void addToFavoriteMovie (){
+   /** private void addToFavoriteMovie (){
                 for (int i = 0; i < mMovieList.size(); i++) {
                     final Movie movie = mMovieList.get(i);
                     if (movie.getId() != movieId) continue;
@@ -89,6 +75,6 @@ public class FavoriteLoader extends AsyncTask<String, Void, Void> {
 
             }
 
-        }
+        }**/
 
 

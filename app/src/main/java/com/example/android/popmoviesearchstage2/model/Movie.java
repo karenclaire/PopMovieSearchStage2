@@ -3,6 +3,8 @@ package com.example.android.popmoviesearchstage2.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 /**
  * Created by karenulmer on 2/18/2018.
  */
@@ -13,11 +15,13 @@ public class Movie implements Parcelable {
         /**
          * Movie title
          */
+        @SerializedName("title")
         private String mTitle;
 
         /**
          * Movie Release Date
          */
+        @SerializedName("release_date")
         private String mReleaseDate;
         /**
          * Image URL
@@ -27,19 +31,25 @@ public class Movie implements Parcelable {
         /**
          *  Overview
          */
+        @SerializedName("overview")
         private String mOverview;
 
         /**
          *  Rating
          */
+        @SerializedName("vote_average")
         private String mVoteAverage;
 
+        @SerializedName("poster_path")
         private String mPosterPath;
 
-        private boolean mTrailer;
+        @SerializedName("video")
+        private Boolean mVideo;
 
-        private boolean mFaveMovie = false;
-
+        @SerializedName("popularity")
+         private Double mPopularity;
+        //private boolean mFaveMovie = false;
+        @SerializedName("id")
        int mId;
 
 
@@ -53,7 +63,7 @@ public class Movie implements Parcelable {
          */
         public Movie(int id, String title, String releaseDate, String overview, String voteAverage,
                      String posterPath) {
-    //
+    //, Double popularity,Boolean video
 
             mTitle = title;
             mReleaseDate = releaseDate;
@@ -62,7 +72,8 @@ public class Movie implements Parcelable {
             mVoteAverage = voteAverage;
             mId = id;
             mPosterPath = posterPath;
-            //mTrailer = trailer;
+            //mPopularity = popularity;
+            //mVideo = video;
             //mFaveMovie = faveMovie;
 
         }
@@ -75,7 +86,8 @@ public class Movie implements Parcelable {
             mVoteAverage = in.readString();
             mId = in.readInt();
             mPosterPath = in.readString();
-            //mTrailer = (in.readByte() != 0);
+            mPopularity=in.readDouble();
+            mVideo = (in.readByte() != 0);
             //mFaveMovie = (in.readByte() != 0)  ;
         }
 
@@ -119,24 +131,28 @@ public class Movie implements Parcelable {
         /**
          * Get the Poster Path of the movie
          */
-        public String getPosterPath() {return mPosterPath; }
+        public String getPosterPath()
+        {return "http://image.tmdb.org/t/p/w185" + mPosterPath; }
 
         public void setPosterPath(String posterPath) {  this.mPosterPath = posterPath;}
 
         /**
          * Get if Movie has Trailer
          */
-        //public boolean isTrailer() {return mTrailer;}
+        public Boolean getVideo () {return mVideo;}
 
-        //public void setTrailer(boolean trailer) {mTrailer = trailer;}
+        public void setVideo(Boolean video) {this.mVideo = video;}
+
+        public Double getPopularMovies () {return mPopularity;}
+        public void setPopularMovies(Double popularity) {this.mPopularity = popularity;}
 
         /**
          * Get if Movie is marked as Favorite
          */
 
-       public boolean isFaveMovie() {return mFaveMovie;}
+       //public boolean isFaveMovie() {return mFaveMovie;}
 
-       public void setFaveMovie(boolean faveMovie) {mFaveMovie = faveMovie;}
+       //public void setFaveMovie(boolean faveMovie) {mFaveMovie = faveMovie;}
 
 
 
@@ -155,8 +171,9 @@ public class Movie implements Parcelable {
             dest.writeString(mVoteAverage);
             dest.writeString(mPosterPath);
             dest.writeInt(mId);
-            //dest.writeByte((byte) (mTrailer ? 1 : 0));
-            dest.writeByte((byte) (mFaveMovie ? 1 : 0));
+            dest.writeByte((byte) (mVideo ? 1 : 0));
+            dest.writeDouble(mPopularity);
+            //dest.writeByte((byte) (mFaveMovie ? 1 : 0));
         }
 
 

@@ -3,9 +3,11 @@ package com.example.android.popmoviesearchstage2;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v4.app.FragmentManager;
+import android.support.design.widget.AppBarLayout;
+import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
@@ -18,6 +20,7 @@ import com.example.android.popmoviesearchstage2.adapters.TrailerAdapter;
 import com.example.android.popmoviesearchstage2.model.Movie;
 import com.example.android.popmoviesearchstage2.model.Review;
 import com.example.android.popmoviesearchstage2.model.Trailer;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -53,12 +56,22 @@ public class DetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.tv_rating)
     TextView ratingTextView;
-    @BindView (R.id.tv_date) TextView dateTextView;
+    @BindView (R.id.tv_date)
+    TextView dateTextView;
     @BindView (R.id.movie_poster)
     ImageView posterImageView;
-    @BindView(R.id.summary) TextView overviewTextView;
-    @BindView(R.id.title)TextView titleTextView;
-    @BindView(R.id.trailer_container)ViewGroup trailerContainer;
+    @BindView(R.id.summary)
+    TextView overviewTextView;
+    @BindView(R.id.title)
+    TextView titleTextView;
+    @BindView(R.id.trailer_container)
+    ViewGroup trailerContainer;
+    @BindView(R.id.toolbar)
+    Toolbar mToolbar;
+    @BindView(R.id.collapsing_toolbar)
+    CollapsingToolbarLayout mCollapsingToolBar;
+    @BindView( (R.id.appBar))
+    AppBarLayout mAppBar;
 
     public List<Movie> moviesList = new ArrayList<>();
     Context mContext;
@@ -76,9 +89,36 @@ public class DetailsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.movie_details);
         ButterKnife.bind(this);
-        Intent intent = getIntent();
 
-        if (intent == null || !intent.hasExtra(EXTRA_MOVIE)) {
+        setSupportActionBar(mToolbar);
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        initCollapsingToolbar();
+
+        Intent intent = getIntent();
+        String moviePath;
+        mMovie= intent.getParcelableExtra(DetailsActivity.EXTRA_MOVIE);
+        moviePath = intent.getStringExtra(EXTRA_POSTER);
+
+        showMovieDetails(mMovie);
+
+        Picasso.with(mContext).setLoggingEnabled(true);
+
+        Picasso.with(mContext)
+                .load(moviePath)
+                .into(posterImageView);
+    }
+
+
+    public void showMovieDetails(Movie mMovie) {
+        dateTextView.setText(mMovie.getReleaseDate());
+        ratingTextView.setText(mMovie.getVoteAverage());
+        overviewTextView.setText(mMovie.getOverview());
+        titleTextView.setText(mMovie.getTitle());
+    }
+
+/**        if (intent == null || !intent.hasExtra(EXTRA_MOVIE)) {
             throw new NullPointerException("Movie cannot be empty");
         }
 
@@ -94,9 +134,32 @@ public class DetailsActivity extends AppCompatActivity {
                     .replace(R.id.movie_detail_container, detailsFragment)
                     .commit();
 
-        }
-        }
+        }**/
+    public void initCollapsingToolbar(){
+        mCollapsingToolBar.setTitle("");
+        mAppBar.setExpanded(true);
+        mAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
+            boolean isShow = false;
+            int scrollRange = -1;
 
+            @Override
+            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
+                if (scrollRange == -1){
+                    appBarLayout.getTotalScrollRange();
+                } if (scrollRange + verticalOffset == 0){
+                    mCollapsingToolBar.setTitle(getString(R.string.title_activity_detail));
+                    isShow = true;
+                }else if (isShow){
+                    mCollapsingToolBar.setTitle("");
+                    isShow = false;
+
+                }
+            }
+        });
+
+
+
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

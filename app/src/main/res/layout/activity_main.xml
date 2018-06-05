@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <!-- This layout defines the main screen and will display the movie posters or an error -->
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behaviour"
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
 
@@ -14,21 +16,21 @@
         android:paddingBottom="8dp"
         android:scrollbars="vertical" />
 
-    <!-- Empty view is only visible when the list has no items. -->
+    <!-- Empty view is only visible when the list has no items.
     <TextView
         android:id="@+id/empty_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:textAppearance="?android:textAppearanceLarge" />
+        android:textAppearance="?android:textAppearanceLarge" />-->
 
 
-    <!-- A progress bar that will be shown to users to indicate that movie data is loading -->
+    <!-- A progress bar that will be shown to users to indicate that movie data is loading
     <ProgressBar
         android:id="@+id/pb_loading_indicator"
         android:layout_width="42dp"
         android:layout_height="42dp"
         android:layout_gravity="center"
-        android:visibility="invisible" />
+        android:visibility="invisible" />-->
 
-</FrameLayout>
+     </RelativeLayout>

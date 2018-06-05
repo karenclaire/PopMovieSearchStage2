@@ -36,6 +36,8 @@
 
     <dimen name="overview_text_size">12sp</dimen>
 
+    <dimen name="detail_backdrop_height">200dp</dimen>
+
     <dimen name="backdrop_height">200dp</dimen>
 
     <dimen name="side_margins">24dp</dimen>
