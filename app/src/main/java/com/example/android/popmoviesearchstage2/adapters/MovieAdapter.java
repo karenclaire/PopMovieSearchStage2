@@ -19,6 +19,10 @@ import com.example.android.popmoviesearchstage2.R;
 import com.example.android.popmoviesearchstage2.model.Movie;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -58,6 +62,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     private ImageButton mFavoriteButton;
     private CardView mCardView;
+    String poster;
+
 
     private static final int VIEW_TYPE_TOP_RATED = 1;
     private static final int VIEW_TYPE_FAVORITE = 2;
@@ -87,16 +93,24 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         }
     }
 
+
     @Override
     public void onBindViewHolder(MovieAdapterViewHolder holder, int position) {
 
+        String releaseDate = (moviesList.get(position).getReleaseDate());
+        releaseDate = getYear(releaseDate);
+
+
         moviesList.get(position);
         holder.ratingTextView.setText(moviesList.get(position).getVoteAverage());
-        holder.dateTextView.setText(moviesList.get(position).getReleaseDate());
+        //holder.dateTextView.setText(moviesList.get(position).getReleaseDate());
+        holder.dateTextView.setText(releaseDate);
+
+        poster = POSTER_PATH + moviesList.get(position).getPosterPath();
 
 
         Picasso.with(mContext)
-                .load(moviesList.get(position).getPosterPath())
+                .load(poster)
                 .into(holder.posterImageView);
 
     }
@@ -241,10 +255,26 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
          //   long movie_id = mCursor.getLong(movie_id_column);
          //   mOnClickListener.onMovieClick(movie_id, this);  // pass the movie ID to the fragment
         }
+     }
+
+    public static String getYear(String dateString){
+        Calendar calendar = Calendar.getInstance();
+        SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = null;
+        try {
+            date = parser.parse(dateString);
+        } catch (ParseException e) {
+            e.printStackTrace();
         }
+        calendar.setTime(date);
+        return String.valueOf(calendar.get(Calendar.YEAR));
 
 
     }
+
+}
+
+
 
 
 
