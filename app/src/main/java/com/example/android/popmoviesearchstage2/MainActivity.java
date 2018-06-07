@@ -30,6 +30,7 @@ import android.content.ContextWrapper;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.database.Cursor;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -147,6 +148,23 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        initViews();
+
+        swipeRefreshLayout = findViewById(R.id.main_content);
+         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+         swipeRefreshLayout.setColorSchemeColors(getColor(R.color.colorPrimaryDark));
+         }
+         swipeRefreshLayout.setOnRefreshListener(() -> {
+         initViews();
+         Toast.makeText(MainActivity.this, "Movies Refreshed", Toast.LENGTH_SHORT).show();
+         });
+
+
+    }
+
+    private void initViews() {
+
+
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Fetching Movies");
         progressDialog.setCancelable(false);
@@ -212,11 +230,20 @@ public class MainActivity extends AppCompatActivity{
             Call<MovieResponse> call = movieInterface.getPopularMovies(BuildConfig.API_KEY);
 
             call.enqueue(new Callback<MovieResponse>() {
+
                 @Override
                 public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                    Log.d(DEBUG_TAG, "MainActivity call.enqueue OnResponse");
+
                     List<Movie> movieList = response.body(). getResults();
                     mRecyclerView.setAdapter(new MovieAdapter(getApplicationContext(), moviesList));
                     mRecyclerView.smoothScrollToPosition(0);
+
+                    if (swipeRefreshLayout.isRefreshing()) {
+                     swipeRefreshLayout.setRefreshing(false);
+
+                     }
+
 
                     progressDialog.dismiss();
                 }
