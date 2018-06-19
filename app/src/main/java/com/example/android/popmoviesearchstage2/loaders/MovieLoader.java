@@ -28,7 +28,7 @@ public class MovieLoader extends AsyncTaskLoader<List<Movie>>  {
      */
     private String mUrl;
 
-    private Context mContext;
+
     private final List<Movie> mMovieList = new ArrayList<>();
 
     Movie mMovie;

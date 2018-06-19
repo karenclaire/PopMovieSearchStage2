@@ -11,7 +11,7 @@
 
     <string name="most_popular">Most Popular</string>
     <string name="highest_rated">Highest Rated</string>
-    <string name="favorite" translatable="false">Favorite</string>
+    <string name="favorite">Favorite</string>
 
 
 

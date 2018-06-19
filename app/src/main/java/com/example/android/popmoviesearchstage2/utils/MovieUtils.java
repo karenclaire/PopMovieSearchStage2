@@ -1,15 +1,9 @@
 package com.example.android.popmoviesearchstage2.utils;
 
-import android.content.ContentValues;
-import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.example.android.popmoviesearchstage2.data.MovieContract;
-import com.example.android.popmoviesearchstage2.data.MovieContract.PopularMovieEntry;
-import com.example.android.popmoviesearchstage2.data.MovieContract.TopRatedMovieEntry;
 import com.example.android.popmoviesearchstage2.model.Movie;
-import com.example.android.popmoviesearchstage2.model.Trailer;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -216,116 +210,6 @@ public class MovieUtils {
             }
             return movies;
         }
-    private Context mContext;
-    int add;
-    final String MOVIE_ID = "id";
-    final String TRAILERS = "trailers";
-    final String YOUTUBE_SITE = "youtube";
-    final String TRAILER_NAME = "name";
-    final String TRAILER_SOURCE = "source";
-    final String REVIEWS = "reviews";
-    final String REVIEWS_RESULTS = "results";
-    final String REVIEW_AUTHOR = "author";
-    final String REVIEW_SOURCE = "url";
-
-    public void getMovieTrailerAndReviewJson(String movieDetails, String trailerAndReviews)throws JSONException{
-
-        try {
-            JSONObject baseJsonResponse = new JSONObject(movieDetails);
-            JSONObject trailerJSONInfo = baseJsonResponse.getJSONObject(TRAILERS);
-            JSONArray trailersArray = trailerJSONInfo.getJSONArray(YOUTUBE_SITE);
-            JSONObject reviewsJSONInfo = baseJsonResponse.getJSONObject(REVIEWS);
-            JSONArray reviewsArray = reviewsJSONInfo.getJSONArray(REVIEWS_RESULTS);
-
-            int id;
-            ContentValues movieValues = new ContentValues();
-
-            String trailer1_source = "", trailer2_source = "", trailer3_source = "";
-            String trailer1_name = "", trailer2_name = "", trailer3_name = "";
-            String review1_source = "", review2_source = "", review3_source = "";
-            String review1_name = "", review2_name = "", review3_name = "";
-
-            id = baseJsonResponse.getInt(MOVIE_ID);
-
-            // Create an empty ArrayList of trailers that we can start adding movies to
-            List<Trailer> trailers = new ArrayList<>();
-            for (int i = 0; i < trailersArray.length(); i++) {
-
-                // Get a single trailer at position i within the list of movies
-                JSONObject currentTrailer = trailersArray.getJSONObject(i);
-                String name = currentTrailer.getString(TRAILER_NAME);
-                String source = currentTrailer.getString(TRAILER_SOURCE);
-                if (i == 0) {
-                    trailer1_source = source;
-                    trailer1_name = name;
-                } else if (i == 1) {
-                    trailer2_source = source;
-                    trailer2_name = name;
-                } else if (i == 2) {
-                    trailer3_source = source;
-                    trailer3_name = name;
-                }
-            }
-
-            movieValues.put(MovieContract.PopularMovieEntry.COLUMN_TRAILER1, trailer1_source);
-            movieValues.put(MovieContract.PopularMovieEntry.COLUMN_TRAILER2, trailer2_source);
-            movieValues.put(MovieContract.PopularMovieEntry.COLUMN_TRAILER3, trailer3_source);
-
-            movieValues.put(PopularMovieEntry.COLUMN_TRAILER1_NAME, trailer1_name);
-            movieValues.put(PopularMovieEntry.COLUMN_TRAILER2_NAME, trailer2_name);
-            movieValues.put(PopularMovieEntry.COLUMN_TRAILER3_NAME, trailer3_name);
-
-
-         for (int i = 0; i < reviewsArray.length(); i++) {
-             // Get a single review at position i within the moviedetails
-            JSONObject currentReview = reviewsArray.getJSONObject(i);
-            String name = currentReview.getString(REVIEW_AUTHOR);
-            String source =currentReview.getString(REVIEW_SOURCE);
-
-            if (i == 0) {
-                review1_source = source;
-                review1_name = name;
-            }
-            else if (i == 1) {
-                review2_source = source;
-                review2_name = name;
-            }
-            else if (i == 2) {
-                review3_source = source;
-                review3_name = name;
-            }
-        }
-            movieValues.put(PopularMovieEntry.COLUMN_REVIEW_CONTENT, review1_source);
-            movieValues.put(PopularMovieEntry.COLUMN_REVIEW_CONTENT2, review2_source);
-            movieValues.put(PopularMovieEntry.COLUMN_REVIEW_CONTENT3, review3_source);
-
-            movieValues.put(PopularMovieEntry.COLUMN_REVIEW_AUTHOR, review1_name);
-            movieValues.put(PopularMovieEntry.COLUMN_REVIEW2_AUTHOR, review2_name);
-            movieValues.put(PopularMovieEntry.COLUMN_REVIEW3_AUTHOR, review3_name);
-
-
-            add = mContext.getContentResolver().update(
-                    PopularMovieEntry.buildMovieDetailsUri(id),
-                    movieValues,
-                    PopularMovieEntry.COLUMN_MOVIE_ID + " = " + String.valueOf(id),
-                    null);
-
-            add = mContext.getContentResolver().update(
-                  TopRatedMovieEntry.buildMovieDetailsUri(id),
-                    movieValues,
-                    PopularMovieEntry.COLUMN_MOVIE_ID + " = " + String.valueOf(id),
-                    null);
-
-            add = mContext.getContentResolver().update(
-                    MovieContract.FavoriteMovieEntry.buildMovieDetailsUri(id),
-                    movieValues,
-                    PopularMovieEntry.COLUMN_MOVIE_ID + " = " + String.valueOf(id),
-                    null);
-
-        }catch (JSONException e) {
-
-        }
-    }
 
     public static String getYear(String dateString){
         Calendar calendar = Calendar.getInstance();

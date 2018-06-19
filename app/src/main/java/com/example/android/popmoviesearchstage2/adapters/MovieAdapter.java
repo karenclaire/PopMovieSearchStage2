@@ -3,9 +3,11 @@ package com.example.android.popmoviesearchstage2.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.support.annotation.Nullable;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -36,6 +38,7 @@ import butterknife.ButterKnife;
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapterViewHolder> {
 
     private static final String LOG_TAG = MovieAdapter.class.getSimpleName();
+    private static final String DEBUG_TAG ="DebugStuff";
 
     /* The context we use to utility methods, app resources and layout inflaters */
     private Context mContext;
@@ -44,9 +47,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     boolean favorite = true;
 
+    Movie mMovie;
+
     //final private MovieAdapterOnClickListener mOnClickListener;
 
-    private List<Movie> moviesList;
+    private List<Movie> moviesList; // this is your local movies in adapter
+
+    MovieAdapter mMovieAdapter;
 
     Cursor mCursor;
 
@@ -57,7 +64,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     public TextView dateTextView;
     public TextView ratingTextView;
-    private Movie currentMovie;
+    Movie currentMovie;
     private RecyclerView mRecyclerView;
 
     private ImageButton mFavoriteButton;
@@ -99,20 +106,15 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
         String releaseDate = (moviesList.get(position).getReleaseDate());
         releaseDate = getYear(releaseDate);
-
-
         moviesList.get(position);
         holder.ratingTextView.setText(moviesList.get(position).getVoteAverage());
         //holder.dateTextView.setText(moviesList.get(position).getReleaseDate());
         holder.dateTextView.setText(releaseDate);
 
         poster = POSTER_PATH + moviesList.get(position).getPosterPath();
-
-
-        Picasso.with(mContext)
+        Picasso.with(holder.posterImageView.getContext())
                 .load(poster)
                 .into(holder.posterImageView);
-
     }
 
     /**
@@ -201,6 +203,16 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         //}
     }
 
+    public void loadMovies(List<Movie> moviesList, Context mContext){
+        Log.d(DEBUG_TAG, "MovieAdapter loadMovies");
+        this.mContext = mContext;
+        if (moviesList != null && !moviesList.isEmpty()){
+            this.moviesList = moviesList; //should work :)
+            notifyDataSetChanged ();
+        }
+
+    }
+
      public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
         @BindView(R.id.tv_rating)
         TextView ratingTextView;
@@ -208,7 +220,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         TextView dateTextView;
         @BindView(R.id.movie_poster)
         ImageView posterImageView;
-        @BindView(R.id.favorite_button)
+        @Nullable
+        @BindView(R.id.favorite_button) //found in fragment_details
         ImageButton mFavoriteButton;
         @BindView(R.id.detail_cardview)
         CardView mCardView;
@@ -222,38 +235,36 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
 
 
-        view.setOnClickListener(view1 -> {
-            int position = getAdapterPosition();
-            if (position != mRecyclerView.NO_POSITION){
+        view.setOnClickListener( new View.OnClickListener () {
+            @Override
+            public void onClick(View view1) {
+                Log.d ( DEBUG_TAG, "MovieAdapter:  view.setOnClickListener" );
+                int position = MovieAdapterViewHolder.this.getAdapterPosition ();
+                if (position != mRecyclerView.NO_POSITION) {
 
-                Movie currentMovie = moviesList.get(position);
-                Intent intent = new Intent(mContext, DetailsActivity.class);
-                intent.putExtra("vote_average", currentMovie.getVoteAverage());
-                intent.putExtra("released_date", currentMovie.getReleaseDate());
-                intent.putExtra("poster_path",currentMovie.getPosterPath());
-                intent.putExtra("overview", currentMovie.getOverview());
-                intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                mContext.startActivity(intent);
+                    Movie movieInformation = new Movie ( currentMovie.getId (), currentMovie.getTitle (),
+                            currentMovie.getReleaseDate (), currentMovie.getOverview (),
+                            currentMovie.getVoteAverage (), currentMovie.getPosterPath () );
+
+                    Intent intent = new Intent ( mContext, DetailsActivity.class );
+                    intent.putExtra ( DetailsActivity.EXTRA_MOVIE, movieInformation );
+                    //intent.putExtra(DetailsActivity.EXTRA_POSTER, poster);
+                    intent.putExtra ( DetailsActivity.EXTRA_POSTER, POSTER_PATH + currentMovie.getPosterPath () );
+                    mContext.startActivity ( intent );
+
+                    /**Movie currentMovie = moviesList.get(position);
+                     Intent intent = new Intent(mContext, DetailsActivity.class);
+                     intent.putExtra("vote_average", currentMovie.getVoteAverage());
+                     intent.putExtra("released_date", currentMovie.getReleaseDate());
+                     intent.putExtra("poster_path",currentMovie.getPosterPath());
+                     intent.putExtra("overview", currentMovie.getOverview());
+                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                     mContext.startActivity(intent);**/
+                }
+
+
             }
-
-
-        });
-
-
-
-
-        // Set an item click listener on the RecyclerView, which sends an intent to a web browser
-        //@Override
-        //public void onClick(View view) {
-        //    int adapterPosition = getAdapterPosition();
-        //    mCursor.moveToPosition(adapterPosition);
-
-        //    int movie_id_column = mCursor.getColumnIndex(MovieContract.PopularMovieEntry.COLUMN_MOVIE_ID);
-        //    if (movie_id_column == -1) {
-         //       return;
-         //   }
-         //   long movie_id = mCursor.getLong(movie_id_column);
-         //   mOnClickListener.onMovieClick(movie_id, this);  // pass the movie ID to the fragment
+        } );
         }
      }
 

@@ -28,10 +28,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.os.Build;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -46,6 +48,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.popmoviesearchstage2.adapters.MovieAdapter;
+import com.example.android.popmoviesearchstage2.data.FavoriteDBHelper;
 import com.example.android.popmoviesearchstage2.model.Movie;
 import com.example.android.popmoviesearchstage2.model.MovieResponse;
 import com.example.android.popmoviesearchstage2.retrofit.MovieInterface;
@@ -58,14 +61,14 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity implements  SharedPreferences.OnSharedPreferenceChangeListener{
 
-//implements  SharedPreferences.OnSharedPreferenceChangeListener
+
     /**
      * Tag for log messages
      */
     public static final String LOG_TAG = MainActivity.class.getName();
-    private static final String DEBUG_TAG = "Debug";
+    private static final String DEBUG_TAG = "DebugStuff";
 
     private final String TOP_RATED = "top_rated";
     private final String FAVORITE = "favorite";
@@ -113,6 +116,10 @@ public class MainActivity extends AppCompatActivity{
 
     private SwipeRefreshLayout swipeRefreshLayout;
 
+    private final AppCompatActivity activity = MainActivity.this;
+
+    private FavoriteDBHelper favoriteDBHelper;
+
     private static final String MOVIE_REQUEST_URL = "http://api.themoviedb.org/3/movie/popular?api_key=";
     private static final String MOVIE_TOP_RATED_URL = "http://api.themoviedb.org/3/movie/top_rated?api_key=";
 
@@ -150,25 +157,10 @@ public class MainActivity extends AppCompatActivity{
 
         initViews();
 
-        swipeRefreshLayout = findViewById(R.id.main_content);
-         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-         swipeRefreshLayout.setColorSchemeColors(getColor(R.color.colorPrimaryDark));
-         }
-         swipeRefreshLayout.setOnRefreshListener(() -> {
-         initViews();
-         Toast.makeText(MainActivity.this, "Movies Refreshed", Toast.LENGTH_SHORT).show();
-         });
-
-
-    }
+           }
 
     private void initViews() {
-
-
-        progressDialog = new ProgressDialog(this);
-        progressDialog.setMessage("Fetching Movies");
-        progressDialog.setCancelable(false);
-        progressDialog.show();
+        Log.d(DEBUG_TAG, "MainActivity onCreate");
 
         //Find reference to the RecyclerView and assert
         mRecyclerView = findViewById(R.id.recyclerview_grid);
@@ -180,8 +172,8 @@ public class MainActivity extends AppCompatActivity{
         //mEmptyStateTextView = findViewById(R.id.empty_view);
         //movieGridView.setEmptyView(mEmptyStateTextView);
 
-        moviesList = new ArrayList<>();
-        mMovieAdapter = new MovieAdapter(mContext,moviesList);
+        moviesList = new ArrayList<> ();
+        mMovieAdapter = new MovieAdapter(this, moviesList);
         /*
          * Use this setting to improve performance if you know that changes in content
          * change the child layout size in the RecyclerView
@@ -193,14 +185,37 @@ public class MainActivity extends AppCompatActivity{
             layoutManager = new GridLayoutManager(this, 4);
             mRecyclerView.setLayoutManager(layoutManager);
         }
-
+// you don't need so many breakponts , you can go step by step using F8, when you want to go into method F7
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mMovieAdapter = new MovieAdapter(mContext, moviesList);
         mRecyclerView.setAdapter(mMovieAdapter);
         mMovieAdapter.notifyDataSetChanged();
+        favoriteDBHelper = new FavoriteDBHelper ( activity );
 
-        loadJson();
+        checkSortOrder();
+    }
+
+    public void viewFavorite(){
+        mRecyclerView =findViewById ( R.id.recyclerview_grid );
+        moviesList = new ArrayList<> ( );
+        mMovieAdapter = new MovieAdapter(this, moviesList);
+
+        if (getActivity().getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
+            layoutManager = new GridLayoutManager(this, 2);
+            mRecyclerView.setLayoutManager(layoutManager);
+        } else {
+            layoutManager = new GridLayoutManager ( this, 4 );
+            mRecyclerView.setLayoutManager ( layoutManager );
+        }
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
+
+        mMovieAdapter = new MovieAdapter(mContext, moviesList);
+        mRecyclerView.setAdapter(mMovieAdapter);
+        mMovieAdapter.notifyDataSetChanged();
+        favoriteDBHelper = new FavoriteDBHelper ( activity );
+
+        getAllFavoriteMovies();
     }
 
     //Helper method to get Activity context
@@ -215,9 +230,8 @@ public class MainActivity extends AppCompatActivity{
         return null;
     }
 
-
-    private void loadJson() {
-        Log.d(DEBUG_TAG, "MainActivity loadJson");
+    private void loadPopular() {
+        Log.d(DEBUG_TAG, "MainActivity loadPopular");
 
         try {
             if (BuildConfig.API_KEY.isEmpty()) {
@@ -226,7 +240,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
             RetrofitClient retrofitClient = new RetrofitClient();
-            MovieInterface movieInterface = RetrofitClient.getRetrofitClient().create(MovieInterface.class);
+            MovieInterface movieInterface = retrofitClient.getRetrofitClient().create(MovieInterface.class);
             Call<MovieResponse> call = movieInterface.getPopularMovies(BuildConfig.API_KEY);
 
             call.enqueue(new Callback<MovieResponse>() {
@@ -235,8 +249,9 @@ public class MainActivity extends AppCompatActivity{
                 public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                     Log.d(DEBUG_TAG, "MainActivity call.enqueue OnResponse");
 
-                    List<Movie> movieList = response.body(). getResults();
-                    mRecyclerView.setAdapter(new MovieAdapter(getApplicationContext(), moviesList));
+
+                    moviesList = response.body(). getResults();
+                    mMovieAdapter.loadMovies(moviesList, mContext);
                     mRecyclerView.smoothScrollToPosition(0);
 
                     if (swipeRefreshLayout.isRefreshing()) {
@@ -244,8 +259,6 @@ public class MainActivity extends AppCompatActivity{
 
                      }
 
-
-                    progressDialog.dismiss();
                 }
 
                 @Override
@@ -263,6 +276,53 @@ public class MainActivity extends AppCompatActivity{
 
 
     }
+
+
+    private void loadTopRated() {
+        Log.d(DEBUG_TAG, "MainActivity loadTopRated");
+
+        try {
+            if (BuildConfig.API_KEY.isEmpty()) {
+                Toast.makeText(getApplicationContext(), "Please get API from themoviedb.org", Toast.LENGTH_SHORT).show();
+                progressDialog.dismiss();
+            }
+
+            RetrofitClient retrofitClient = new RetrofitClient();
+            MovieInterface movieInterface = retrofitClient.getRetrofitClient().create(MovieInterface.class);
+            Call<MovieResponse> call = movieInterface.getTopRatedMovies(BuildConfig.API_KEY);
+
+            call.enqueue(new Callback<MovieResponse>() {
+
+                @Override
+                public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
+                    Log.d(DEBUG_TAG, "MainActivity call.enqueue OnResponse");
+
+                    moviesList = response.body().getResults();
+                    mMovieAdapter.loadMovies(moviesList, mContext );
+                    mRecyclerView.smoothScrollToPosition(0);
+
+
+
+                    }
+
+                @Override
+                public void onFailure(Call<MovieResponse> call, Throwable t) {
+                    Log.d("Error", t.getMessage());
+                    Toast.makeText(MainActivity.this, "Error fetching Data", Toast.LENGTH_SHORT).show();
+                }
+
+                });
+
+
+        } catch (Exception e) {
+            Log.d("MainActivity Error", e.getMessage());
+            Toast.makeText(this, e.toString(), Toast.LENGTH_SHORT).show();
+
+        }
+
+    }
+
+
 
     // Helper method to check network connection
     /**public boolean isConnected() {
@@ -295,82 +355,64 @@ public class MainActivity extends AppCompatActivity{
     }
 
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
+    }
 
+    @Override
+    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
+        Log.d(DEBUG_TAG, "MainActivity OnSharedPreference updated");
+        checkSortOrder();
+    }
 
-
-    /**@Override
-    public Loader onCreateLoader(int loaderId, Bundle bundle) {
-        Log.d(DEBUG_TAG, "MainActivity onCreateLoader " + String.valueOf(loaderId));
-        // Define a projection that specifies the columns from the table we care about.
+    public void checkSortOrder(){
+        Log.d(DEBUG_TAG, "MainActivity checkSortOrder");
         SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         String preferenceSortOrder = sharedPrefs.getString(getString(R.string.pref_sorting_criteria_key),
                 getString(R.string.pref_sorting_criteria_default_value));
-       Uri baseUri;
-        switch (loaderId) {
 
-            case MOVIE_LOADER_ID:
-                if (prefSortOrder != null && preferenceSortOrder.contains(TOP_RATED)){
-                    Log.d(DEBUG_TAG, "MainActivity topRatedSortOrder " + prefSortOrder);
-                    return new CursorLoader(this,   // Parent activity context
-                            TopRatedMovieEntry.CONTENT_URI,   // Provider content URI to query
-                            topRatedProjection,             // Columns to include in the resulting Cursor
-                            null,                   // No selection clause
-                            null,                   // No selection arguments
-                            null);
-               }else if (prefSortOrder != null && preferenceSortOrder.contains(FAVORITE)){
-                    Log.d(DEBUG_TAG, "MainActivity favoriteSortOrder " + prefSortOrder);
-                    return new CursorLoader(this,   // Parent activity context
-                            FavoriteMovieEntry.CONTENT_URI,   // Provider content URI to query
-                            favoriteProjection,             // Columns to include in the resulting Cursor
-                            null,                   // No selection clause
-                            null,                   // No selection arguments
-                            null);
+        if (preferenceSortOrder.equals(this.getString(R.string.pref_sorting_criteria_default_value))){
+            Toast.makeText ( this, "Sort order set to Popular", Toast.LENGTH_SHORT).show ();
+            loadPopular();
+        } else if (preferenceSortOrder.equals (this.getString(R.string.pref_sorting_criteria_favorite))){
+            Toast.makeText ( this, "Sort order set to Popular", Toast.LENGTH_SHORT).show ();
+            viewFavorite();
+        }else {
+            Toast.makeText ( this, "Sort order set to Popular", Toast.LENGTH_SHORT).show ();
+            loadTopRated();
 
-                }else {Log.d(DEBUG_TAG, "MainActivity defaultSortOrder " + prefSortOrder);
-                    return new CursorLoader(this,   // Parent activity context
-                            PopularMovieEntry.CONTENT_URI,   // Provider content URI to query
-                            popularProjection,             // Columns to include in the resulting Cursor
-                            null,                   // No selection clause
-                            null,                   // No selection arguments
-                            null);
 
-                }
-            default:
-                throw new RuntimeException("Loader Not Implemented: " + loaderId);
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        if (moviesList.isEmpty()){
+            checkSortOrder();
+        }else{
+
         }
     }
 
-    @Override
-    public void onLoadFinished(@NonNull Loader<Cursor> loader, Cursor data) {
-        Log.d(DEBUG_TAG, "MainActivity OnLoadFinished");
-        // Update {@link MovieAdapter} with this new cursor containing updated Movie data
-        mMovieAdapter.swapCursor(mCursor);
-        mEmptyStateTextView.setText(R.string.no_movies);
-        mProgressBar.setVisibility(View.GONE);
+    public void getAllFavoriteMovies(){
+        new AsyncTask <Void, Void, Void>(){
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                moviesList.clear ();
+                moviesList.addAll ( favoriteDBHelper.getAllFavoriteMovies());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute ( aVoid );
+                mMovieAdapter.notifyDataSetChanged ();
+            }
+        }.execute ( );
     }
-
-
-    @Override
-    public void onLoaderReset(@NonNull Loader loader) {
-        Log.d(DEBUG_TAG, "OnCreate Loader Reset");
-                //  clear the Cursor
-        mMovieAdapter.swapCursor(null);
-
-    }
-
-    @Override
-    protected void onDestroy() {
-        Log.d(DEBUG_TAG, "MainActivity OnDestroy");
-        super.onDestroy();
-        PreferenceManager.getDefaultSharedPreferences(this).unregisterOnSharedPreferenceChangeListener(this);
-
-    }**/
-
-    /**@Override
-    public void onSharedPreferenceChanged(SharedPreferences sharedPreferences, String key) {
-        Log.d(DEBUG_TAG, "MainActivity OnSharedPreference");
-        LoaderManager loaderManager = getSupportLoaderManager();
-        loaderManager.restartLoader((MOVIE_LOADER_ID), null, this);
-
-    }**/
 }

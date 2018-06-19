@@ -11,7 +11,6 @@ import com.google.gson.annotations.SerializedName;
 
 public class Movie implements Parcelable {
 
-
         /**
          * Movie title
          */
@@ -52,6 +51,7 @@ public class Movie implements Parcelable {
         @SerializedName("id")
        int mId;
 
+        public Movie (){}
 
     /**
      * Create a new movie object from five inputs
@@ -97,10 +97,15 @@ public class Movie implements Parcelable {
         public String getTitle() {
             return mTitle;
         }
+        public void setTitle (String title) {this.mTitle = title;}
 
         public int getId() {
         return mId;
     }
+
+        public void setId(int id){
+            this.mId = id;
+        }
 
         /**
          * Get the year movie was released
@@ -108,6 +113,7 @@ public class Movie implements Parcelable {
         public String getReleaseDate() {
             return mReleaseDate;
         }
+         public void setReleaseDate (String releaseDate) {this.mReleaseDate = releaseDate;}
 
         /**
          * Get the image URL of the movie
@@ -117,17 +123,14 @@ public class Movie implements Parcelable {
         /**
          * Get the URL of the movie
          */
-        public String getOverview() {
-            return mOverview;
-        }
+        public String getOverview() {return mOverview;}
+        public void setOverview (String overview) {this.mOverview = overview;}
 
         /**
          * Get the Rating of the movie
          */
-        public String getVoteAverage() {
-            return mVoteAverage;
-        }
-
+        public String getVoteAverage() {return mVoteAverage;}
+        public void setVoteAverage (String voteAverage) {this.mVoteAverage = voteAverage ;}
         /**
          * Get the Poster Path of the movie
          */

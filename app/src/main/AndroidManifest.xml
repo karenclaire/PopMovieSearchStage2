@@ -42,12 +42,12 @@
         <!--The manifest entry for our SettingsActivity. Each Activity requires a manifest entry-->
         <activity android:name="com.example.android.popmoviesearchstage2.SettingsActivity"
             android:label="@string/settings_title">
-            <meta-data
+           <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.android.popmoviesearchstage2.MainActivity"/>
         </activity>
         <provider
-            android:name=".data.MovieProvider"
+            android:name=".data.FavoriteProvider"
             android:authorities="com.example.android.popmoviesearchstage2"
             android:exported="false"
             android:grantUriPermissions="true"/>
