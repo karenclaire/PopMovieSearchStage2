@@ -114,7 +114,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
     ProgressDialog progressDialog;
 
 
-    private final AppCompatActivity activity = MainActivity.this;
+    //private final AppCompatActivity activity = MainActivity.this;
 
     private FavoriteDBHelper favoriteDBHelper;
 
@@ -189,7 +189,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
         mMovieAdapter = new MovieAdapter(mContext, moviesList);
         mRecyclerView.setAdapter(mMovieAdapter);
         mMovieAdapter.notifyDataSetChanged();
-        favoriteDBHelper = new FavoriteDBHelper ( activity );
+        favoriteDBHelper = new FavoriteDBHelper(mContext);
 
         checkSortOrder();
     }
@@ -211,7 +211,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
         mMovieAdapter = new MovieAdapter(mContext, moviesList);
         mRecyclerView.setAdapter(mMovieAdapter);
         mMovieAdapter.notifyDataSetChanged();
-        favoriteDBHelper = new FavoriteDBHelper ( activity );
+        favoriteDBHelper = new FavoriteDBHelper (mContext);
 
         getAllFavoriteMovies();
     }
@@ -252,7 +252,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
                     mMovieAdapter.loadMovies(moviesList, mContext);
                     mRecyclerView.smoothScrollToPosition(0);
 
-                    
+
                 }
 
                 @Override

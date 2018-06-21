@@ -105,7 +105,7 @@ public class DetailsActivity extends AppCompatActivity {
 
     FavoriteDBHelper favoriteDBHelper;
     public Movie favoriteMovies;
-    private final AppCompatActivity activity = DetailsActivity.this;
+    //private final AppCompatActivity activity = DetailsActivity.this;
 
     public List <Trailer> mTrailerList = new ArrayList<>();
     private final TrailerAdapter mTrailerAdapter = new TrailerAdapter ( this, mTrailerList );
@@ -171,7 +171,7 @@ public class DetailsActivity extends AppCompatActivity {
                         Snackbar.make ( buttonView, "Added to Favorite", Snackbar.LENGTH_SHORT ).show ();
                     } else{
                         int id = getIntent ().getExtras ().getInt("id");
-                        favoriteDBHelper = new FavoriteDBHelper (activity);
+                        favoriteDBHelper = new FavoriteDBHelper(mContext);
                         favoriteDBHelper.deleteFavorite (id);
                         SharedPreferences.Editor editor = getSharedPreferences
                                 ("com.example.android.popmoviesearchstage2.DetailsActivity", MODE_PRIVATE).edit();
@@ -276,7 +276,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     public void saveFavorite() {
-        favoriteDBHelper = new FavoriteDBHelper ( activity );
+        favoriteDBHelper = new FavoriteDBHelper(mContext);
         favoriteMovies = new Movie ();
         int id = getIntent ().getExtras ().getInt ( "id" );
         String voteAverage = getIntent ().getExtras ().getString ("vote_average" );
