@@ -21,4 +21,5 @@ public class TrailerResponse {
     // Get Trailer List
 
     public List<Trailer> getTrailerList() {return mTrailerList; }
+
 }

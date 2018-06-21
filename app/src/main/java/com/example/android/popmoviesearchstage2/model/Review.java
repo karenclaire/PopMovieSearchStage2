@@ -3,17 +3,27 @@ package com.example.android.popmoviesearchstage2.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.SerializedName;
+
 public class Review implements Parcelable {
 
+    @SerializedName ("id" )
     private int mId;
+
+    @SerializedName ( "author")
     private String mAuthor;
+
+    @SerializedName ( "content")
     private String mContent;
-    private String mReviewPath;
+    //private String mReviewPath;
+
+    @SerializedName ( "url")
+    private String mUrl;
+
 
     public int getId() {
         return mId;
     }
-
 
     public String getContent() {
         return mContent;
@@ -33,25 +43,21 @@ public class Review implements Parcelable {
 
 
     //Get Review Path
-    public String getReviewPath() {
-        return mReviewPath;
-    }
+    //public String getReviewPath() {return mReviewPath; }
 
-    public void setReviewPath(String reviewPath) {
-        mReviewPath = reviewPath;
-    }
+   // public void setReviewPath(String reviewPath) { mReviewPath = reviewPath; }
 
+    // Get Review URL
     public String getUrl() {
-        return url;
+        return mUrl;
     }
 
-    private String url;
 
-    public Review(int id, String author, String content, String reviewPath) {
+    public Review(int id, String author, String content, String url) {
         mId = id;
         mAuthor = author;
         mContent = content;
-        mReviewPath = reviewPath;
+       mUrl = url;
     }
 
     @Override
@@ -65,7 +71,7 @@ public class Review implements Parcelable {
         dest.writeInt(mId);
         dest.writeString(mAuthor);
         dest.writeString(mContent);
-        dest.writeString(mReviewPath);
+        dest.writeString(mUrl);
 
 
     }
@@ -74,7 +80,7 @@ public class Review implements Parcelable {
         mId = in.readInt();
         mAuthor = in.readString();
         mContent = in.readString();
-        mReviewPath = in.readString();
+        mUrl = in.readString();
     }
 
     public static final Creator<Review> CREATOR = new Creator<Review>() {

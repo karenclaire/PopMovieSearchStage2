@@ -1,7 +1,7 @@
 package com.example.android.popmoviesearchstage2.retrofit;
 
 import com.example.android.popmoviesearchstage2.model.MovieResponse;
-import com.example.android.popmoviesearchstage2.model.Review;
+import com.example.android.popmoviesearchstage2.model.ReviewResponse;
 import com.example.android.popmoviesearchstage2.model.TrailerResponse;
 
 import retrofit2.Call;
@@ -21,17 +21,7 @@ public interface MovieInterface {
     Call<TrailerResponse> getTrailers(@Path("movie_id") int movieId, @Query("api_key") String apiKey);
 
     @GET("movie/{movie_id}/reviews")
-    Call<Review> getReviews(@Path("movie_id") String movieId, @Query("api_key") String apiKey);
-
-    /** For reference
-
-
-    @GET("movie/{movie_id}/reviews")
-    Call<Review> getReviews(@Path("movie_id") String movieId, @Query("api_key") String apiKey);
-
-    @GET("/movie/{movie_id}")
-    Call<Movie> getMovies(@Path("sort") String sort, @Query("api_key") String api_key);**/
-
+    Call<ReviewResponse> getReviews(@Path("movie_id") int movieId, @Query("api_key") String apiKey);
 
 
 

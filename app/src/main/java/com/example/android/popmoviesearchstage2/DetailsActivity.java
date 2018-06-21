@@ -26,6 +26,7 @@ import com.example.android.popmoviesearchstage2.adapters.TrailerAdapter;
 import com.example.android.popmoviesearchstage2.data.FavoriteDBHelper;
 import com.example.android.popmoviesearchstage2.model.Movie;
 import com.example.android.popmoviesearchstage2.model.Review;
+import com.example.android.popmoviesearchstage2.model.ReviewResponse;
 import com.example.android.popmoviesearchstage2.model.Trailer;
 import com.example.android.popmoviesearchstage2.model.TrailerResponse;
 import com.example.android.popmoviesearchstage2.retrofit.MovieInterface;
@@ -97,8 +98,10 @@ public class DetailsActivity extends AppCompatActivity {
     private String posterPath;
     public static final String VIDEO_PATH = "https://www.youtube.com/watch?v=";
 
-    private List <Review> mReviewList = new ArrayList<>();
-    public ReviewAdapter mReviewAdapter;
+    public List <Review> mReviewList = new ArrayList<>();
+    public final ReviewAdapter mReviewAdapter = new ReviewAdapter (this, mReviewList);
+    @BindView (R.id.reviews_list)
+    RecyclerView reviewRecyclerView;
 
     FavoriteDBHelper favoriteDBHelper;
     public Movie favoriteMovies;
@@ -227,6 +230,14 @@ public class DetailsActivity extends AppCompatActivity {
 
         loadTrailers();
 
+        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager (getApplicationContext ());
+        reviewRecyclerView.setLayoutManager (linearLayoutManager);
+        reviewRecyclerView.setAdapter (mReviewAdapter);
+        mReviewAdapter.notifyDataSetChanged ();
+
+
+        loadReviews ();
+
     }
 
     private void loadTrailers() {
@@ -282,6 +293,41 @@ public class DetailsActivity extends AppCompatActivity {
         favoriteDBHelper.addFavorites (favoriteMovies);
     }
 
+
+    public void loadReviews() {
+        int mMovieId = getIntent ().getExtras ().getInt ( "id" );
+        try {
+            if (BuildConfig.API_KEY.isEmpty ()) {
+                Toast.makeText ( getApplicationContext (), "Please get API from themoviedb.org", Toast.LENGTH_SHORT ).show ();
+
+            }
+
+            RetrofitClient retrofitClient = new RetrofitClient ();
+            MovieInterface movieInterface = retrofitClient.getRetrofitClient ().create ( MovieInterface.class );
+            Call<ReviewResponse> call = movieInterface.getReviews ( mMovieId, BuildConfig.API_KEY );
+            call.enqueue ( new Callback<ReviewResponse> () {
+
+
+                @Override
+                public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
+                    mReviewList = response.body ().getReviews ();
+
+                    reviewRecyclerView.smoothScrollToPosition ( 0 );
+
+                }
+
+                @Override
+                public void onFailure(Call<ReviewResponse> call, Throwable t) {
+                    Log.d ( "Error", t.getMessage () );
+                    Toast.makeText ( DetailsActivity.this, "Error fetching Data", Toast.LENGTH_SHORT ).show ();
+
+                }
+            } );
+        } catch (Exception e) {
+            Log.d ( "DetailsActivity Error", e.getMessage () );
+            Toast.makeText ( this, e.toString (), Toast.LENGTH_SHORT ).show ();
+        }
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

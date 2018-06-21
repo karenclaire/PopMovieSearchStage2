@@ -35,7 +35,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.content.CursorLoader;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.GridLayoutManager;
@@ -114,7 +113,6 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
     private GridLayoutManager layoutManager;
     ProgressDialog progressDialog;
 
-    private SwipeRefreshLayout swipeRefreshLayout;
 
     private final AppCompatActivity activity = MainActivity.this;
 
@@ -254,11 +252,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
                     mMovieAdapter.loadMovies(moviesList, mContext);
                     mRecyclerView.smoothScrollToPosition(0);
 
-                    if (swipeRefreshLayout.isRefreshing()) {
-                     swipeRefreshLayout.setRefreshing(false);
-
-                     }
-
+                    
                 }
 
                 @Override
