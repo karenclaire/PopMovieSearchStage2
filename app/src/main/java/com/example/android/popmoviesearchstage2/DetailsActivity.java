@@ -249,7 +249,7 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             RetrofitClient retrofitClient = new RetrofitClient ();
-            MovieInterface movieInterface = retrofitClient.getRetrofitClient ().create ( MovieInterface.class );
+            MovieInterface movieInterface = RetrofitClient.getRetrofitClient ().create ( MovieInterface.class );
             Call<TrailerResponse> call = movieInterface.getTrailers ( mMovieId, BuildConfig.API_KEY );
             call.enqueue ( new Callback<TrailerResponse> () {
 
@@ -260,7 +260,7 @@ public class DetailsActivity extends AppCompatActivity {
                     trailerListRecyclerView.smoothScrollToPosition ( 0 );
 
 
-                }
+            }
 
                 @Override
                 public void onFailure(Call<TrailerResponse> call, Throwable t) {
@@ -303,7 +303,7 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             RetrofitClient retrofitClient = new RetrofitClient ();
-            MovieInterface movieInterface = retrofitClient.getRetrofitClient ().create ( MovieInterface.class );
+            MovieInterface movieInterface = RetrofitClient.getRetrofitClient ().create ( MovieInterface.class );
             Call<ReviewResponse> call = movieInterface.getReviews ( mMovieId, BuildConfig.API_KEY );
             call.enqueue ( new Callback<ReviewResponse> () {
 

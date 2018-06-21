@@ -22,7 +22,7 @@ public class MovieResponse {
 
     public List<Movie> getResults(){return mResults;}
 
-    public List<Movie> getMovies(){return mResults;}
+    //public List<Movie> getMovies(){return mResults;}
 
     public void setResults (List<Movie> results){
         this.mResults = results;

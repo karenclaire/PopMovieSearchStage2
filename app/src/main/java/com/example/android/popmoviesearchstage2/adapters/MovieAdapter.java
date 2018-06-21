@@ -111,11 +111,14 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         //holder.dateTextView.setText(moviesList.get(position).getReleaseDate());
         holder.dateTextView.setText(releaseDate);
 
-        poster = POSTER_PATH + moviesList.get(position).getPosterPath();
+        poster = moviesList.get(position).getPosterPath();
         Picasso.with(holder.posterImageView.getContext())
                 .load(poster)
                 .into(holder.posterImageView);
     }
+
+    // I am only running this one
+
 
     /**
      * if (!mCursor.moveToFirst()) {
@@ -214,60 +217,71 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     }
 
      public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
-        @BindView(R.id.tv_rating)
-        TextView ratingTextView;
-        @BindView(R.id.tv_date)
-        TextView dateTextView;
-        @BindView(R.id.movie_poster)
-        ImageView posterImageView;
-        @Nullable
-        @BindView(R.id.favorite_button) //found in fragment_details
-        ImageButton mFavoriteButton;
-        @BindView(R.id.detail_cardview)
-        CardView mCardView;
-        @BindView(R.id.movie_list_item_layout)
-        LinearLayout mListItemLayout;
+         @BindView(R.id.tv_rating)
+         TextView ratingTextView;
+         @BindView(R.id.tv_date)
+         TextView dateTextView;
+         @BindView(R.id.movie_poster)
+         ImageView posterImageView;
+         @Nullable
+         @BindView(R.id.favorite_button) //found in fragment_details
+                 ImageButton mFavoriteButton;
+         @BindView(R.id.detail_cardview)
+         CardView mCardView;
+         @BindView(R.id.movie_list_item_layout)
+         LinearLayout mListItemLayout;
 
 
-        MovieAdapterViewHolder(View view) {
-            super(view);
-            ButterKnife.bind(this, view);
+         MovieAdapterViewHolder(View view) {
+             super ( view );
+             ButterKnife.bind ( this, view );
+
+
+             view.setOnClickListener ( new View.OnClickListener () {
+                 @Override
+                 public void onClick(View view1) {
+                     Log.d ( DEBUG_TAG, "MovieAdapter:  view.setOnClickListener" );
+                     int position = getAdapterPosition ();
+                     if (position != mRecyclerView.NO_POSITION) {
+
+                         /**Movie movieInformation = new Movie ( currentMovie.getId (), currentMovie.getTitle (),
+                          currentMovie.getReleaseDate (), currentMovie.getOverview (),
+                          currentMovie.getVoteAverage (), currentMovie.getPosterPath () );
+
+                          Intent intent = new Intent ( mContext, DetailsActivity.class );
+                          intent.putExtra ( DetailsActivity.EXTRA_MOVIE, movieInformation );
+                          //intent.putExtra(DetailsActivity.EXTRA_POSTER, poster);
+                          intent.putExtra ( DetailsActivity.EXTRA_POSTER, POSTER_PATH + currentMovie.getPosterPath () );
+                          mContext.startActivity ( intent );**/
 
 
 
-        view.setOnClickListener( new View.OnClickListener () {
-            @Override
-            public void onClick(View view1) {
-                Log.d ( DEBUG_TAG, "MovieAdapter:  view.setOnClickListener" );
-                int position = MovieAdapterViewHolder.this.getAdapterPosition ();
-                if (position != mRecyclerView.NO_POSITION) {
 
-                    Movie movieInformation = new Movie ( currentMovie.getId (), currentMovie.getTitle (),
-                            currentMovie.getReleaseDate (), currentMovie.getOverview (),
-                            currentMovie.getVoteAverage (), currentMovie.getPosterPath () );
+                          /**currentMovie = new Movie(currentMovie.getId (), currentMovie.getTitle (),
+                                  currentMovie.getReleaseDate (), currentMovie.getOverview (),
+                                  currentMovie.getVoteAverage (), currentMovie.getPosterPath ());**/
 
-                    Intent intent = new Intent ( mContext, DetailsActivity.class );
-                    intent.putExtra ( DetailsActivity.EXTRA_MOVIE, movieInformation );
-                    //intent.putExtra(DetailsActivity.EXTRA_POSTER, poster);
-                    intent.putExtra ( DetailsActivity.EXTRA_POSTER, POSTER_PATH + currentMovie.getPosterPath () );
-                    mContext.startActivity ( intent );
+                         Intent intent = new Intent ( mContext, DetailsActivity.class );
+                         intent.putExtra ( DetailsActivity.EXTRA_MOVIE, currentMovie );
+                         intent.putExtra ( DetailsActivity.EXTRA_POSTER, POSTER_PATH + currentMovie.getPosterPath () );
+                         mContext.startActivity ( intent );
 
-                    /**Movie currentMovie = moviesList.get(position);
-                     Intent intent = new Intent(mContext, DetailsActivity.class);
-                     intent.putExtra("vote_average", currentMovie.getVoteAverage());
-                     intent.putExtra("released_date", currentMovie.getReleaseDate());
-                     intent.putExtra("poster_path",currentMovie.getPosterPath());
-                     intent.putExtra("overview", currentMovie.getOverview());
-                     intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                     mContext.startActivity(intent);**/
-                }
+                         /**Movie currentMovie = moviesList.get ( position );
+                         Intent intent = new Intent ( mContext, DetailsActivity.class );
+                         intent.putExtra ( "vote_average", currentMovie.getVoteAverage () );
+                         intent.putExtra ( "released_date", currentMovie.getReleaseDate () );
+                         intent.putExtra ( "poster_path", currentMovie.getPosterPath () );
+                         intent.putExtra ( "overview", currentMovie.getOverview () );
+                         intent.addFlags ( Intent.FLAG_ACTIVITY_NEW_TASK );
+                         mContext.startActivity ( intent );**/
+                     }
 
 
-            }
-        } );
-        }
+                     //}
+                 }
+             } );
+         }
      }
-
     public static String getYear(String dateString){
         Calendar calendar = Calendar.getInstance();
         SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd");

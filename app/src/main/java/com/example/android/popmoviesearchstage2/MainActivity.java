@@ -59,9 +59,12 @@ import java.util.List;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+import retrofit2.Retrofit;
 
 public class MainActivity extends AppCompatActivity implements  SharedPreferences.OnSharedPreferenceChangeListener{
 
+    public static final String MOVIE_BASE_URL = "http://api.themoviedb.org/3/";
+    public static Retrofit retrofit = null;
 
     /**
      * Tag for log messages
@@ -247,8 +250,11 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
                 public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                     Log.d(DEBUG_TAG, "MainActivity call.enqueue OnResponse");
 
+                     // %20 shoudn't be here
+                    // where is that from
+                    // poster is not coming out. can you request control again+
 
-                    moviesList = response.body(). getResults();
+                    moviesList = response.body().getResults();
                     mMovieAdapter.loadMovies(moviesList, mContext);
                     mRecyclerView.smoothScrollToPosition(0);
 
@@ -371,13 +377,13 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
             Toast.makeText ( this, "Sort order set to Popular", Toast.LENGTH_SHORT).show ();
             loadPopular();
         } else if (preferenceSortOrder.equals (this.getString(R.string.pref_sorting_criteria_favorite))){
-            Toast.makeText ( this, "Sort order set to Popular", Toast.LENGTH_SHORT).show ();
+            Toast.makeText ( this, "Sort order set to Favorite", Toast.LENGTH_SHORT).show ();
             viewFavorite();
         }else {
-            Toast.makeText ( this, "Sort order set to Popular", Toast.LENGTH_SHORT).show ();
+            Toast.makeText ( this, "Sort order set to Highest Rated", Toast.LENGTH_SHORT).show ();
             loadTopRated();
 
-
+// android studio files...for the project?
         }
 
     }
