@@ -117,10 +117,11 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
                        int position = getAdapterPosition ();
                        if (position != RecyclerView.NO_POSITION) {
                            //trailer trailerInformation = mTrailerList.get(position);
+                           Context context = view.getContext();
                            String trailerId = mTrailerList.get ( position ).getKey ();
                            Intent intent = new Intent ( ACTION_VIEW, Uri.parse ( "vnd.youtube:" + trailerId ) );
                            intent.putExtra ( EXTRA_VIDEO, trailerId );
-                           mContext.startActivity ( intent );
+                           context.startActivity ( intent );
 
 
                        }

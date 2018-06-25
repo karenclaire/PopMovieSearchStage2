@@ -122,11 +122,11 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
                         //String reviewPath = "https://www.themoviedb.org/review/" + MOVIE_ID + "?&append_to_response=reviews";
 
                         String reviewPath = "https://www.themoviedb.org/review/" + String.valueOf ( mReviewList.get ( position ).getId () );
-
+                        Context context = view.getContext();
                         Intent intent = new Intent ( mContext, DetailsActivity.class );
                         intent.putExtra ( DetailsActivity.EXTRA_REVIEW, reviewInformation );
                         intent.putExtra ( DetailsActivity.EXTRA_REVIEW_SITE, reviewPath );
-                        mContext.startActivity ( intent );
+                        context.startActivity ( intent );
 
 
                     }

@@ -383,7 +383,6 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
             Toast.makeText ( this, "Sort order set to Highest Rated", Toast.LENGTH_SHORT).show ();
             loadTopRated();
 
-// android studio files...for the project?
         }
 
     }
@@ -397,6 +396,8 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
 
         }
     }
+
+
 
     public void getAllFavoriteMovies(){
         new AsyncTask <Void, Void, Void>(){

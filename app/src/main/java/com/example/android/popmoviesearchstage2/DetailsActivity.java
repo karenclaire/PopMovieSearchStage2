@@ -5,13 +5,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
-import android.support.design.widget.AppBarLayout;
-import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,7 +31,11 @@ import com.example.android.popmoviesearchstage2.retrofit.RetrofitClient;
 import com.github.ivbaranov.mfb.MaterialFavoriteButton;
 import com.squareup.picasso.Picasso;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -58,13 +59,13 @@ import retrofit2.Response;
 
 public class DetailsActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = DetailsActivity.class.getSimpleName();
-    private static final String DEBUG_TAG ="DebugStuff";
+    private static final String LOG_TAG = DetailsActivity.class.getSimpleName ();
+    private static final String DEBUG_TAG = "DebugStuff";
 
     public static final String EXTRA_MOVIE = "intent_extra_movie";
     public static final String EXTRA_POSTER = "intent_poster_movie";
-    public static final String EXTRA_VIDEO= "intent_video";
-    public static final String EXTRA_VIDEO_SITE= "intent_video_site";
+    public static final String EXTRA_VIDEO = "intent_video";
+    public static final String EXTRA_VIDEO_SITE = "intent_video_site";
     public static final String EXTRA_REVIEW = "intent_review";
     public static final String EXTRA_REVIEW_SITE = "intent_review_site";
 
@@ -72,9 +73,9 @@ public class DetailsActivity extends AppCompatActivity {
 
     @BindView(R.id.tv_rating)
     TextView ratingTextView;
-    @BindView (R.id.tv_date)
+    @BindView(R.id.tv_date)
     TextView dateTextView;
-    @BindView (R.id.movie_poster)
+    @BindView(R.id.movie_poster)
     ImageView posterImageView;
     @BindView(R.id.summary)
     TextView overviewTextView;
@@ -82,157 +83,131 @@ public class DetailsActivity extends AppCompatActivity {
     TextView titleTextView;
     @BindView(R.id.trailer_container)
     ViewGroup trailerContainer;
-    @BindView(R.id.toolbar)
-    Toolbar mToolbar;
-    @BindView(R.id.collapsing_toolbar)
-    CollapsingToolbarLayout mCollapsingToolBar;
-    @BindView( (R.id.appBar))
-    AppBarLayout mAppBar;
-    @BindView ( R.id.favorite_button)
+    //@BindView(R.id.toolbar)
+    // Toolbar mToolbar;
+    //@BindView(R.id.collapsing_toolbar)
+    //CollapsingToolbarLayout mCollapsingToolBar;
+    //@BindView( (R.id.appBar))
+    //AppBarLayout mAppBar;
+    @BindView(R.id.favorite_button)
     MaterialFavoriteButton materialFavoriteButton;
 
 
-    public List<Movie> moviesList = new ArrayList<>();
+    public List<Movie> moviesList = new ArrayList<> ();
     Context mContext;
     private Movie mMovie;
     private String posterPath;
     public static final String VIDEO_PATH = "https://www.youtube.com/watch?v=";
 
-    public List <Review> mReviewList = new ArrayList<>();
-    public final ReviewAdapter mReviewAdapter = new ReviewAdapter (this, mReviewList);
-    @BindView (R.id.reviews_list)
+    public List<Review> mReviewList = new ArrayList<> ();
+    public final ReviewAdapter mReviewAdapter = new ReviewAdapter ( this, mReviewList );
+    @BindView(R.id.reviews_list)
     RecyclerView reviewRecyclerView;
 
     FavoriteDBHelper favoriteDBHelper;
     public Movie favoriteMovies;
     //private final AppCompatActivity activity = DetailsActivity.this;
 
-    public List <Trailer> mTrailerList = new ArrayList<>();
+    public List<Trailer> mTrailerList = new ArrayList<> ();
     private final TrailerAdapter mTrailerAdapter = new TrailerAdapter ( this, mTrailerList );
-    @BindView ( R.id.trailer_list)
+    @BindView(R.id.trailer_list)
     RecyclerView trailerListRecyclerView;
+
+    public static final String POSTER_PATH = "http://image.tmdb.org/t/p/w185/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        Log.d(DEBUG_TAG, "DetailsActivity onCreate");
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.movie_details);
-        ButterKnife.bind(this);
+        Log.d ( DEBUG_TAG, "DetailsActivity onCreate" );
+        super.onCreate ( savedInstanceState );
+        setContentView ( R.layout.movie_details );
+        ButterKnife.bind ( this );
 
-        setSupportActionBar(mToolbar);
+        Intent intent = getIntent ();
+        int position;
 
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
-        initCollapsingToolbar();
+        mMovie = intent.getParcelableExtra ( DetailsActivity.EXTRA_MOVIE );
 
-        Intent intent = getIntent();
-        String moviePath;
 
-       mMovie= intent.getParcelableExtra(DetailsActivity.EXTRA_MOVIE);
-        moviePath = intent.getStringExtra(EXTRA_POSTER);
+        showMovieDetails ( mMovie );
 
-        showMovieDetails(mMovie);
-
-      if (intent.hasExtra ("original_title")){
+        //if (intent.hasExtra ("original_title")){
 
         /**  Bundle intentExtras = getIntent ().getExtras ();
-           String thumbnail = intentExtras.getString ("poster_path");
-           String movieTitle =intentExtras.getString ("original_title");
-           String overview = intentExtras.getString ("overview");
-           String rating = intentExtras.getString ("vote_average");
-           String releaseDate = intentExtras.getString ("release_date");**/
+         String thumbnail = intentExtras.getString ("poster_path");
+         String movieTitle =intentExtras.getString ("original_title");
+         String overview = intentExtras.getString ("overview");
+         String rating = intentExtras.getString ("vote_average");
+         String releaseDate = intentExtras.getString ("release_date");**/
 
-        Picasso.with(mContext).setLoggingEnabled(true);
-
-        Picasso.with(mContext)
-                .load(moviePath)
-                .into(posterImageView);
+        ///posterPath = intent.getStringExtra ( DetailsActivity.EXTRA_POSTER );
 
 
-           /**dateTextView.setText(releaseDate);
-           ratingTextView.setText(rating);
-           overviewTextView.setText(overview);
-           titleTextView.setText(movieTitle);**/
+        //} else{
+        //   Toast.makeText (this, "No Movie Data Available", Toast.LENGTH_SHORT).show();
+        //}
 
-       } else{
-           Toast.makeText (this, "No Movie Data Available", Toast.LENGTH_SHORT).show();
-       }
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences ( getApplicationContext () );
+        materialFavoriteButton.setOnFavoriteChangeListener ( new MaterialFavoriteButton.OnFavoriteChangeListener () {
+            @Override
+            public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
+                if (favorite) {
+                    SharedPreferences.Editor editor = getSharedPreferences
+                            ( "com.example.android.popmoviesearchstage2.DetailsActivity", MODE_PRIVATE ).edit ();
+                    editor.putBoolean ( "Favorite Added", true );
+                    editor.apply ();
+                    saveFavorite ();
+                    Snackbar.make ( buttonView, "Added to Favorite", Snackbar.LENGTH_SHORT ).show ();
+                } else {
+                    int id = getIntent ().getExtras ().getInt ( "id" );
+                    favoriteDBHelper = new FavoriteDBHelper ( mContext );
+                    favoriteDBHelper.deleteFavorite ( id );
+                    SharedPreferences.Editor editor = getSharedPreferences
+                            ( "com.example.android.popmoviesearchstage2.DetailsActivity", MODE_PRIVATE ).edit ();
+                    editor.putBoolean ( "Favorite Removed", true );
+                    editor.apply ();
+                    Snackbar.make ( buttonView, "Removed from Favorite", Snackbar.LENGTH_SHORT ).show ();
 
-       SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(getApplicationContext ());
-       materialFavoriteButton.setOnFavoriteChangeListener( new MaterialFavoriteButton.OnFavoriteChangeListener(){
-                   @Override
-                   public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
-                    if (favorite){
-                        SharedPreferences.Editor editor = getSharedPreferences
-                                ("com.example.android.popmoviesearchstage2.DetailsActivity", MODE_PRIVATE).edit();
-                        editor.putBoolean ("Favorite Added", true);
-                        editor.apply();
-                        saveFavorite();
-                        Snackbar.make ( buttonView, "Added to Favorite", Snackbar.LENGTH_SHORT ).show ();
-                    } else{
-                        int id = getIntent ().getExtras ().getInt("id");
-                        favoriteDBHelper = new FavoriteDBHelper(mContext);
-                        favoriteDBHelper.deleteFavorite (id);
-                        SharedPreferences.Editor editor = getSharedPreferences
-                                ("com.example.android.popmoviesearchstage2.DetailsActivity", MODE_PRIVATE).edit();
-                        editor.putBoolean ("Favorite Removed", true);
-                        editor.apply();
-                        Snackbar.make ( buttonView, "Removed from Favorite", Snackbar.LENGTH_SHORT ).show ();
-
-                    }
-                   }
+                }
+            }
 
 
-
-       });
+        } );
 
         initViews ();
     }
 
-     public void showMovieDetails(Movie mMovie) {
-     dateTextView.setText(mMovie.getReleaseDate());
-     ratingTextView.setText(mMovie.getVoteAverage());
-     overviewTextView.setText(mMovie.getOverview());
-     titleTextView.setText(mMovie.getTitle());
-     }
+    public void showMovieDetails(Movie mMovie) {
+        String releaseDate=( mMovie.getReleaseDate());
+        releaseDate =getYear ( releaseDate );
+        dateTextView.setText  (releaseDate);
+        ratingTextView.setText ( mMovie.getVoteAverage () );
+        overviewTextView.setText ( mMovie.getOverview () );
+        titleTextView.setText ( mMovie.getTitle () );
 
+        posterPath = (mMovie.getPosterPath ());
+        Picasso.with ( mContext ).setLoggingEnabled ( true );
 
-    public void initCollapsingToolbar(){
-        mCollapsingToolBar.setTitle("");
-        mAppBar.setExpanded(true);
-        mAppBar.addOnOffsetChangedListener(new AppBarLayout.OnOffsetChangedListener() {
-            boolean isShow = false;
-            int scrollRange = -1;
+        Picasso.with ( posterImageView.getContext ())
+                .load ( posterPath )
+                .into ( posterImageView );
 
-            @Override
-            public void onOffsetChanged(AppBarLayout appBarLayout, int verticalOffset) {
-                if (scrollRange == -1){
-                    appBarLayout.getTotalScrollRange();
-                } if (scrollRange + verticalOffset == 0){
-                    mCollapsingToolBar.setTitle(getString(R.string.title_activity_detail));
-                    isShow = true;
-                }else if (isShow){
-                    mCollapsingToolBar.setTitle("");
-                    isShow = false;
-
-                }
-            }
-        });
 
     }
 
+
     private void initViews() {
 
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager (getApplicationContext ());
-        trailerListRecyclerView.setLayoutManager (layoutManager);
-        trailerListRecyclerView.setAdapter (mTrailerAdapter);
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager ( getApplicationContext () );
+        trailerListRecyclerView.setLayoutManager ( layoutManager );
+        trailerListRecyclerView.setAdapter ( mTrailerAdapter );
         mTrailerAdapter.notifyDataSetChanged ();
 
-        loadTrailers();
+        loadTrailers ();
 
-        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager (getApplicationContext ());
-        reviewRecyclerView.setLayoutManager (linearLayoutManager);
-        reviewRecyclerView.setAdapter (mReviewAdapter);
+        RecyclerView.LayoutManager linearLayoutManager = new LinearLayoutManager ( getApplicationContext () );
+        reviewRecyclerView.setLayoutManager ( linearLayoutManager );
+        reviewRecyclerView.setAdapter ( mReviewAdapter );
         mReviewAdapter.notifyDataSetChanged ();
 
 
@@ -249,7 +224,7 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             RetrofitClient retrofitClient = new RetrofitClient ();
-            MovieInterface movieInterface = RetrofitClient.getRetrofitClient ().create ( MovieInterface.class );
+            MovieInterface movieInterface = retrofitClient.getRetrofitClient ().create ( MovieInterface.class );
             Call<TrailerResponse> call = movieInterface.getTrailers ( mMovieId, BuildConfig.API_KEY );
             call.enqueue ( new Callback<TrailerResponse> () {
 
@@ -260,7 +235,7 @@ public class DetailsActivity extends AppCompatActivity {
                     trailerListRecyclerView.smoothScrollToPosition ( 0 );
 
 
-            }
+                }
 
                 @Override
                 public void onFailure(Call<TrailerResponse> call, Throwable t) {
@@ -276,21 +251,21 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     public void saveFavorite() {
-        favoriteDBHelper = new FavoriteDBHelper(mContext);
+        favoriteDBHelper = new FavoriteDBHelper ( mContext );
         favoriteMovies = new Movie ();
         int id = getIntent ().getExtras ().getInt ( "id" );
-        String voteAverage = getIntent ().getExtras ().getString ("vote_average" );
-        String movieTitle =  getIntent ().getExtras ().getString ("original_title" );
-        String releaseDate = getIntent ().getExtras ().getString ("release_date" );
-        String posterPath = getIntent ().getExtras ().getString ("poster_path" );
+        String voteAverage = getIntent ().getExtras ().getString ( "vote_average" );
+        String movieTitle = getIntent ().getExtras ().getString ( "original_title" );
+        String releaseDate = getIntent ().getExtras ().getString ( "release_date" );
+        String posterPath = getIntent ().getExtras ().getString ( "poster_path" );
 
-        favoriteMovies.setId (id);
-        favoriteMovies.setTitle ( movieTitle);
-        favoriteMovies.setVoteAverage (voteAverage);
-        favoriteMovies.setReleaseDate (releaseDate );
-        favoriteMovies.setPosterPath (posterPath );
+        favoriteMovies.setId ( id );
+        favoriteMovies.setTitle ( movieTitle );
+        favoriteMovies.setVoteAverage ( voteAverage );
+        favoriteMovies.setReleaseDate ( releaseDate );
+        favoriteMovies.setPosterPath ( posterPath );
 
-        favoriteDBHelper.addFavorites (favoriteMovies);
+        favoriteDBHelper.addFavorites ( favoriteMovies );
     }
 
 
@@ -303,7 +278,7 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             RetrofitClient retrofitClient = new RetrofitClient ();
-            MovieInterface movieInterface = RetrofitClient.getRetrofitClient ().create ( MovieInterface.class );
+            MovieInterface movieInterface = retrofitClient.getRetrofitClient ().create ( MovieInterface.class );
             Call<ReviewResponse> call = movieInterface.getReviews ( mMovieId, BuildConfig.API_KEY );
             call.enqueue ( new Callback<ReviewResponse> () {
 
@@ -331,27 +306,38 @@ public class DetailsActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        getMenuInflater ().inflate ( R.menu.menu_main, menu );
         return true;
     }
 
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        int id = item.getItemId();
+        int id = item.getItemId ();
 
         if (id == R.id.action_settings) {
-            startActivity(new Intent(this, SettingsActivity.class));
+            startActivity ( new Intent ( this, SettingsActivity.class ) );
             return true;
         }
 
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected ( item );
     }
 
 
+    public static String getYear(String dateString) {
+        Calendar calendar = Calendar.getInstance ();
+        SimpleDateFormat parser = new SimpleDateFormat ( "yyyy-MM-dd" );
+        Date date = null;
+        try {
+            date = parser.parse ( dateString );
+        } catch (ParseException e) {
+            e.printStackTrace ();
+        }
+        calendar.setTime ( date );
+        return String.valueOf ( calendar.get ( Calendar.YEAR ) );
+
+    }
 }
-
-
 
 /**        if (intent == null || !intent.hasExtra(EXTRA_MOVIE)) {
  throw new NullPointerException("Movie cannot be empty");
