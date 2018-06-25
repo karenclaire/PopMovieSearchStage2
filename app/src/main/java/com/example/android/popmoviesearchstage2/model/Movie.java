@@ -135,7 +135,8 @@ public class Movie implements Parcelable {
          * Get the Poster Path of the movie
          */
         public String getPosterPath()
-        {return "http://image.tmdb.org/t/p/w185" + mPosterPath; }
+        {return mPosterPath; }
+        //"http://image.tmdb.org/t/p/w185"
 
         public void setPosterPath(String posterPath) {  this.mPosterPath = posterPath;}
 

@@ -127,8 +127,6 @@ public class DetailsActivity extends AppCompatActivity {
 
 
         mMovie = intent.getParcelableExtra ( DetailsActivity.EXTRA_MOVIE );
-
-
         showMovieDetails ( mMovie );
 
         //if (intent.hasExtra ("original_title")){
@@ -174,7 +172,7 @@ public class DetailsActivity extends AppCompatActivity {
 
         } );
 
-        initViews ();
+//        initViews ();
     }
 
     public void showMovieDetails(Movie mMovie) {
@@ -185,7 +183,7 @@ public class DetailsActivity extends AppCompatActivity {
         overviewTextView.setText ( mMovie.getOverview () );
         titleTextView.setText ( mMovie.getTitle () );
 
-        posterPath = (mMovie.getPosterPath ());
+        posterPath = POSTER_PATH +(mMovie.getPosterPath ());
         Picasso.with ( mContext ).setLoggingEnabled ( true );
 
         Picasso.with ( posterImageView.getContext ())
@@ -216,7 +214,7 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void loadTrailers() {
-        int mMovieId = getIntent ().getExtras ().getInt ( "id" );
+        String mMovieId = getIntent ().getExtras ().getString ( "id" );
         try {
             if (BuildConfig.API_KEY.isEmpty ()) {
                 Toast.makeText ( getApplicationContext (), "Please get API from themoviedb.org", Toast.LENGTH_SHORT ).show ();
@@ -270,7 +268,7 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     public void loadReviews() {
-        int mMovieId = getIntent ().getExtras ().getInt ( "id" );
+        String mMovieId = getIntent ().getExtras ().getString ( "id" );
         try {
             if (BuildConfig.API_KEY.isEmpty ()) {
                 Toast.makeText ( getApplicationContext (), "Please get API from themoviedb.org", Toast.LENGTH_SHORT ).show ();

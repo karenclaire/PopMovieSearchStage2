@@ -104,7 +104,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         //holder.dateTextView.setText(moviesList.get(position).getReleaseDate());
         holder.dateTextView.setText(releaseDate);
 
-        poster = moviesList.get(position).getPosterPath();
+        poster = POSTER_PATH + moviesList.get(position).getPosterPath();
         Picasso.with(holder.posterImageView.getContext())
                 .load(poster)
                 .into(holder.posterImageView);
@@ -184,6 +184,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                           Context context = view.getContext();
                           Intent intent = new Intent ( context, DetailsActivity.class );
                           intent.putExtra ( DetailsActivity.EXTRA_MOVIE, moviesList.get(position) );
+                          // intent.putExtra ( DetailsActivity.EXTRA_POSTER, moviesList.get(position).getPosterPath () );
                           context.startActivity ( intent );
 
                          /**Movie currentMovie = moviesList.get ( position );
