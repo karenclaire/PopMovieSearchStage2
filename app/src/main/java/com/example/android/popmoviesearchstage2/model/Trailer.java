@@ -3,92 +3,143 @@ package com.example.android.popmoviesearchstage2.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.google.gson.annotations.Expose;
 import com.google.gson.annotations.SerializedName;
 
-public class Trailer implements Parcelable{
+import java.io.Serializable;
 
-    public static final String YOUTUBE = "YouTube";
-    public static final String TRAILER = "Trailer";
-    public static final String TRAILER_PATH ="http://api.themoviedb.org/3/movie/" + "id" + "?&append_to_response=trailers";
+public class Trailer implements Serializable,Parcelable {
+    @SerializedName("id")
+    @Expose
+    private String id;
+    @SerializedName("iso_639_1")
+    @Expose
+    private String iso6391;
+    @SerializedName("iso_3166_1")
+    @Expose
+    private String iso31661;
+    @SerializedName("key")
+    @Expose
+    private String key;
+    @SerializedName("name")
+    @Expose
+    private String name;
+    @SerializedName("site")
+    @Expose
+    private String site;
+    @SerializedName("size")
+    @Expose
+    private Integer size;
+    @SerializedName("type")
+    @Expose
+    private String type;
+    public final static Parcelable.Creator<Trailer> CREATOR = new Creator<Trailer> () {
 
-    @SerializedName ( "id")
-    private int mId;
 
-    @SerializedName ("key")
-    private String mKey;
+        @SuppressWarnings({
+                "unchecked"
+        })
+        public Trailer createFromParcel(Parcel in) {
+            return new Trailer ( in );
+        }
 
-    @SerializedName ("name")
-    private String mName;
+        public Trailer[] newArray(int size) {
+            return (new Trailer[size]);
+        }
 
-    private String mSite;
-    private String mTrailerPath;
+    };
 
 
-    public Trailer(int id, String key, String name) {
-        //String site, String trailerPath
-        mId = id;
-        mKey = key;
-        mName = name;
-        //mSite = site;
-        //mTrailerPath = trailerPath;
+    protected Trailer(Parcel in) {
+        this.id = ((String) in.readValue ( (String.class.getClassLoader ()) ));
+        this.iso6391 = ((String) in.readValue ( (String.class.getClassLoader ()) ));
+        this.iso31661 = ((String) in.readValue ( (String.class.getClassLoader ()) ));
+        this.key = ((String) in.readValue ( (String.class.getClassLoader ()) ));
+        this.name = ((String) in.readValue ( (String.class.getClassLoader ()) ));
+        this.site = ((String) in.readValue ( (String.class.getClassLoader ()) ));
+        this.size = ((Integer) in.readValue ( (Integer.class.getClassLoader ()) ));
+        this.type = ((String) in.readValue ( (String.class.getClassLoader ()) ));
     }
 
+    public Trailer() {
+    }
 
+    public String getId() {
+        return id;
+    }
 
-    //Get Trailer Key
-    public String getKey() { return mKey;}
-    public void setKey (String key) {mKey = key;}
+    public void setId(String id) {
+        this.id = id;
+    }
 
-    //Get Trailer Name
-    public String getName() {return mName;}
-    public void setTrailerName(String name) { this.mName = name;}
+    public String getIso6391() {
+        return iso6391;
+    }
 
-   /** Get Trailer Site
+    public void setIso6391(String iso6391) {
+        this.iso6391 = iso6391;
+    }
+
+    public String getIso31661() {
+        return iso31661;
+    }
+
+    public void setIso31661(String iso31661) {
+        this.iso31661 = iso31661;
+    }
+
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public String getSite() {
-        return mSite;
+        return site;
     }
-    public void setSite (String site) {mSite = site;}
 
-    //Get Trailer Path
-    public String getTrailerPath() {return mTrailerPath;}
-    public void setTrailerPath (String trailerPath) {mTrailerPath = trailerPath;}**/
+    public void setSite(String site) {
+        this.site = site;
+    }
 
+    public Integer getSize() {
+        return size;
+    }
 
-    @Override
+    public void setSize(Integer size) {
+        this.size = size;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeValue ( id );
+        dest.writeValue ( iso6391 );
+        dest.writeValue ( iso31661 );
+        dest.writeValue ( key );
+        dest.writeValue ( name );
+        dest.writeValue ( site );
+        dest.writeValue ( size );
+        dest.writeValue ( type );
+    }
+
     public int describeContents() {
         return 0;
     }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-
-        //dest.writeInt(mId);
-        dest.writeString(mKey);
-        dest.writeString(mName);
-        //dest.writeString(mSite);
-        //dest.writeString(mTrailerPath);
-
-    }
-
-    protected Trailer(Parcel in) {
-       // mId = in.readInt();
-        mKey = in.readString();
-        mName =in.readString();
-        //mSite = in.readString();
-       //mTrailerPath = in.readString();
-
-
-    }
-
-    public static final Parcelable.Creator<Trailer> CREATOR = new Parcelable.Creator<Trailer>() {
-        @Override
-        public Trailer createFromParcel(Parcel in) {
-            return new Trailer(in);
-        }
-
-        @Override
-        public Trailer[] newArray(int size) {
-            return new Trailer[size];
-        }
-    };
 }

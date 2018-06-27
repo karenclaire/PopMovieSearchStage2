@@ -128,7 +128,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
                            //trailer trailerInformation = mTrailerList.get(position);
                            Context context = view.getContext();
                            String trailerId = mTrailerList.get ( position ).getKey ();
-                           Intent intent = new Intent ( ACTION_VIEW, Uri.parse ( "vnd.youtube:" + trailerId ) );
+                           Intent intent = new Intent ( ACTION_VIEW, Uri.parse ( "https://www.youtube.com/watch?v=" + trailerId ) );
                            intent.putExtra ( EXTRA_VIDEO, trailerId );
                            context.startActivity ( intent );
 

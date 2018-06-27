@@ -38,9 +38,8 @@ public class MovieResponse implements Serializable, Parcelable
             return (new MovieResponse[size]);
         }
 
-    }
-            ;
-    private final static long serialVersionUID = -7930774089284981159L;
+    };
+
 
     protected MovieResponse(Parcel in) {
         this.page = ((Integer) in.readValue((Integer.class.getClassLoader())));
