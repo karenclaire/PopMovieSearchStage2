@@ -11,6 +11,8 @@ public class Trailer implements Parcelable{
     public static final String TRAILER = "Trailer";
     public static final String TRAILER_PATH ="http://api.themoviedb.org/3/movie/" + "id" + "?&append_to_response=trailers";
 
+    @SerializedName ( "id")
+    private int mId;
 
     @SerializedName ("key")
     private String mKey;
@@ -22,9 +24,9 @@ public class Trailer implements Parcelable{
     private String mTrailerPath;
 
 
-    public Trailer(String key, String name) {
+    public Trailer(int id, String key, String name) {
         //String site, String trailerPath
-        //mId = id;
+        mId = id;
         mKey = key;
         mName = name;
         //mSite = site;

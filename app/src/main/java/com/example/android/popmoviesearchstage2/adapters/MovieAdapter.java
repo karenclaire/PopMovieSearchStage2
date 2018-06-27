@@ -2,6 +2,7 @@ package com.example.android.popmoviesearchstage2.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -100,7 +101,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
         String releaseDate = (moviesList.get(position).getReleaseDate());
         releaseDate = getYear(releaseDate);
         moviesList.get(position);
-        holder.ratingTextView.setText(moviesList.get(position).getVoteAverage());
+        holder.ratingTextView.setText(moviesList.get(position).getVoteAverage().toString ());
         //holder.dateTextView.setText(moviesList.get(position).getReleaseDate());
         holder.dateTextView.setText(releaseDate);
 
@@ -183,7 +184,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
                           Context context = view.getContext();
                           Intent intent = new Intent ( context, DetailsActivity.class );
-                          intent.putExtra ( DetailsActivity.EXTRA_MOVIE, moviesList.get(position) );
+                         intent.putExtra ( DetailsActivity.EXTRA_MOVIE, (Parcelable) moviesList.get(position));
                           // intent.putExtra ( DetailsActivity.EXTRA_POSTER, moviesList.get(position).getPosterPath () );
                           context.startActivity ( intent );
 

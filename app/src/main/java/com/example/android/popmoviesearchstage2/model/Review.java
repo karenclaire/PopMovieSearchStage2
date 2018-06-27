@@ -8,7 +8,7 @@ import com.google.gson.annotations.SerializedName;
 public class Review implements Parcelable {
 
     @SerializedName ("id" )
-    private String mId;
+    private int mId;
 
     @SerializedName ( "author")
     private String mAuthor;
@@ -21,7 +21,7 @@ public class Review implements Parcelable {
     private String mUrl;
 
 
-    public String getId() {
+    public int getId() {
         return mId;
     }
 
@@ -53,7 +53,7 @@ public class Review implements Parcelable {
     }
 
 
-    public Review(String id, String author, String content, String url) {
+    public Review(int id, String author, String content, String url) {
         mId = id;
         mAuthor = author;
         mContent = content;
@@ -68,7 +68,7 @@ public class Review implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
 
-        dest.writeString(mId);
+        dest.writeInt(mId);
         dest.writeString(mAuthor);
         dest.writeString(mContent);
         dest.writeString(mUrl);
@@ -77,7 +77,7 @@ public class Review implements Parcelable {
     }
 
     protected Review(Parcel in) {
-        mId = in.readString();
+        mId = in.readInt();
         mAuthor = in.readString();
         mContent = in.readString();
         mUrl = in.readString();

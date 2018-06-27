@@ -7,7 +7,7 @@ import java.util.List;
 public class ReviewResponse {
 
     @SerializedName ( "id" )
-    private int mReviewId;
+    private int mId;
 
     @SerializedName("page")
     private int mPage;

@@ -100,7 +100,7 @@ public class DetailsActivity extends AppCompatActivity {
     public static final String VIDEO_PATH = "https://www.youtube.com/watch?v=";
 
     public List<Review> mReviewList = new ArrayList<> ();
-    public final ReviewAdapter mReviewAdapter = new ReviewAdapter ( this, mReviewList );
+    public final ReviewAdapter mReviewAdapter = new ReviewAdapter( this, mReviewList );
     @BindView(R.id.reviews_list)
     RecyclerView reviewRecyclerView;
 
@@ -127,7 +127,7 @@ public class DetailsActivity extends AppCompatActivity {
 
 
         mMovie = intent.getParcelableExtra ( DetailsActivity.EXTRA_MOVIE );
-        showMovieDetails ( mMovie );
+        showMovieDetails();
 
         //if (intent.hasExtra ("original_title")){
 
@@ -157,7 +157,7 @@ public class DetailsActivity extends AppCompatActivity {
                     saveFavorite ();
                     Snackbar.make ( buttonView, "Added to Favorite", Snackbar.LENGTH_SHORT ).show ();
                 } else {
-                    int id = getIntent ().getExtras ().getInt ( "id" );
+                    int id = mMovie.getId ();
                     favoriteDBHelper = new FavoriteDBHelper ( mContext );
                     favoriteDBHelper.deleteFavorite ( id );
                     SharedPreferences.Editor editor = getSharedPreferences
@@ -172,18 +172,22 @@ public class DetailsActivity extends AppCompatActivity {
 
         } );
 
-//        initViews ();
+       initViews ();
     }
 
-    public void showMovieDetails(Movie mMovie) {
+    public void showMovieDetails() {
+        Log.d ( DEBUG_TAG, "DetailsActivity showMovieDetails" );
         String releaseDate=( mMovie.getReleaseDate());
         releaseDate =getYear ( releaseDate );
         dateTextView.setText  (releaseDate);
-        ratingTextView.setText ( mMovie.getVoteAverage () );
+        ratingTextView.setText ( mMovie.getVoteAverage ().toString () );
         overviewTextView.setText ( mMovie.getOverview () );
         titleTextView.setText ( mMovie.getTitle () );
 
+        //Intent intent = getIntent ();
+
         posterPath = POSTER_PATH +(mMovie.getPosterPath ());
+        //posterPath =intent.getStringExtra ( DetailsActivity.EXTRA_POSTER );
         Picasso.with ( mContext ).setLoggingEnabled ( true );
 
         Picasso.with ( posterImageView.getContext ())
@@ -195,6 +199,8 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     private void initViews() {
+
+        Log.d ( DEBUG_TAG, "DetailsActivity initViews" );
 
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager ( getApplicationContext () );
         trailerListRecyclerView.setLayoutManager ( layoutManager );
@@ -214,7 +220,8 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     private void loadTrailers() {
-        String mMovieId = getIntent ().getExtras ().getString ( "id" );
+        Log.d ( DEBUG_TAG, "DetailsActivity loadTrailers" );
+        int mMovieId = mMovie.getId ();
         try {
             if (BuildConfig.API_KEY.isEmpty ()) {
                 Toast.makeText ( getApplicationContext (), "Please get API from themoviedb.org", Toast.LENGTH_SHORT ).show ();
@@ -222,14 +229,16 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             RetrofitClient retrofitClient = new RetrofitClient ();
+            Log.d ( DEBUG_TAG, "DetailsActivity movieInterface loadTrailers" );
             MovieInterface movieInterface = retrofitClient.getRetrofitClient ().create ( MovieInterface.class );
             Call<TrailerResponse> call = movieInterface.getTrailers ( mMovieId, BuildConfig.API_KEY );
             call.enqueue ( new Callback<TrailerResponse> () {
 
                 @Override
-                public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
-                    mTrailerList = response.body ().getTrailerList ();
-
+                   public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
+                    Log.d ( DEBUG_TAG, "DetailsActivity onResponse Trailers" );
+                    mTrailerList = response.body ().getTrailers ();
+                    mTrailerAdapter.loadTrailers (mTrailerList, mContext);
                     trailerListRecyclerView.smoothScrollToPosition ( 0 );
 
 
@@ -249,17 +258,18 @@ public class DetailsActivity extends AppCompatActivity {
     }
 
     public void saveFavorite() {
+        Log.d ( DEBUG_TAG, "DetailsActivity SaveFavorite" );
         favoriteDBHelper = new FavoriteDBHelper ( mContext );
         favoriteMovies = new Movie ();
         int id = getIntent ().getExtras ().getInt ( "id" );
-        String voteAverage = getIntent ().getExtras ().getString ( "vote_average" );
+        Double voteAverage = getIntent ().getExtras ().getDouble ( "vote_average" );
         String movieTitle = getIntent ().getExtras ().getString ( "original_title" );
         String releaseDate = getIntent ().getExtras ().getString ( "release_date" );
         String posterPath = getIntent ().getExtras ().getString ( "poster_path" );
 
         favoriteMovies.setId ( id );
         favoriteMovies.setTitle ( movieTitle );
-        favoriteMovies.setVoteAverage ( voteAverage );
+        favoriteMovies.setVoteAverage(voteAverage);
         favoriteMovies.setReleaseDate ( releaseDate );
         favoriteMovies.setPosterPath ( posterPath );
 
@@ -268,7 +278,8 @@ public class DetailsActivity extends AppCompatActivity {
 
 
     public void loadReviews() {
-        String mMovieId = getIntent ().getExtras ().getString ( "id" );
+        Log.d ( DEBUG_TAG, "DetailsActivity loadReviews" );
+        int mMovieId = mMovie.getId ();
         try {
             if (BuildConfig.API_KEY.isEmpty ()) {
                 Toast.makeText ( getApplicationContext (), "Please get API from themoviedb.org", Toast.LENGTH_SHORT ).show ();
@@ -276,6 +287,8 @@ public class DetailsActivity extends AppCompatActivity {
             }
 
             RetrofitClient retrofitClient = new RetrofitClient ();
+            Log.d ( DEBUG_TAG, "DetailsActivity movieInterface loadReviews" );
+
             MovieInterface movieInterface = retrofitClient.getRetrofitClient ().create ( MovieInterface.class );
             Call<ReviewResponse> call = movieInterface.getReviews ( mMovieId, BuildConfig.API_KEY );
             call.enqueue ( new Callback<ReviewResponse> () {
@@ -283,6 +296,7 @@ public class DetailsActivity extends AppCompatActivity {
 
                 @Override
                 public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
+                    Log.d ( DEBUG_TAG, "DetailsActivity onResponseReviews" );
                     mReviewList = response.body ().getReviews ();
 
                     reviewRecyclerView.smoothScrollToPosition ( 0 );

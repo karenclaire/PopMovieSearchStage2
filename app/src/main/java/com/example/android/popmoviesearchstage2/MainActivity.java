@@ -250,9 +250,6 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
                 public void onResponse(Call<MovieResponse> call, Response<MovieResponse> response) {
                     Log.d(DEBUG_TAG, "MainActivity call.enqueue OnResponse");
 
-                     // %20 shoudn't be here
-                    // where is that from
-                    // poster is not coming out. can you request control again+
 
                     moviesList = response.body().getResults();
                     mMovieAdapter.loadMovies(moviesList, mContext);

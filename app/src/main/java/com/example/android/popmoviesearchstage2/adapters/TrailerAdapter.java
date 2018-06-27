@@ -82,6 +82,15 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
 
     }
 
+    public void loadTrailers(List<Trailer> trailerList, Context mContext) {
+        Log.d ( DEBUG_TAG, "TrailerAdapter loadTrailers" );
+        this.mContext = mContext;
+        if (trailerList != null && !trailerList.isEmpty ()) {
+            this.mTrailerList = trailerList;
+            notifyDataSetChanged ();
+        }
+    }
+
     @Override
     public int getItemCount() {
         return (mTrailerList == null) ? 0 : mTrailerList.size();}

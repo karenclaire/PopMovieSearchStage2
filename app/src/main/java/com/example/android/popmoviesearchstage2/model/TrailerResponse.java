@@ -20,6 +20,6 @@ public class TrailerResponse {
 
     // Get Trailer List
 
-    public List<Trailer> getTrailerList() {return mTrailerList; }
+    public List<Trailer> getTrailers() {return mTrailerList; }
 
 }

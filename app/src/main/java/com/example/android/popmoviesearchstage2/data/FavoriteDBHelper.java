@@ -115,7 +115,7 @@ public class FavoriteDBHelper extends SQLiteOpenHelper {
                 Movie movie = new Movie ();
                 movie.setId ( Integer.parseInt ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_MOVIE_ID ) ) ) );
                 movie.setTitle ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_TITLE ) ) );
-                movie.setVoteAverage ( String.valueOf ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_VOTE_AVERAGE ) ) ) );
+               // movie.setVoteAverage ( String.valueOf ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_VOTE_AVERAGE ) ) ) );
                 movie.setReleaseDate ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_RELEASE_DATE ) ) );
                 movie.setOverview ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_OVERVIEW ) ) );
                 movie.setPosterPath ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_POSTER_PATH ) ) );
