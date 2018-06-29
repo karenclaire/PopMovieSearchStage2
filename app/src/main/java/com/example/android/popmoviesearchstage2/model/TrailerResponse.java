@@ -51,7 +51,7 @@ public class TrailerResponse implements Serializable, Parcelable{
         this.id = id;
     }
 
-    public List<Trailer> getTrailers() {
+    public List<Trailer> getResults() {
         return results;
     }
 

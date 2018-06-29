@@ -40,11 +40,9 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     }
 
     public TrailerAdapter(Context context, List<Trailer> trailerList) {
-
-        //, TrailerAdapterListener trailerAdapterListener
         this.mContext = context;
         this.mTrailerList = trailerList;
-        //this.mTrailerAdapterListener = trailerAdapterListener;
+
     }
 
     @Override
@@ -65,20 +63,6 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
         Bundle bundle = new Bundle();
         trailer = mTrailerList.get(position);
         holder.trailerTextView.setText(trailer.getName());
-        //holder.setOnClickListener(mTrailerAdapterListener, position);
-
-
-
-        /**String trailerThumbnail = API.makeTrailerThumbnailURL((mTrailerList.get(position).getKey()));
-        String trailerThumbnail = "https://img.youtube.com/vi/" + mTrailerList.get(position).getKey() + "/0.jpg";
-        ImageView imageView = holder.itemView.findViewById(R.id.trailer_image);
-        Picasso.with(mContext)
-                .load(trailerThumbnail)
-                .placeholder(R.drawable.ic_ondemand_video_black_24dp)
-                .into(imageView);
-
-        if (mTrailerList != null && mTrailerList.size() > 0) {
-            bundle.putParcelableArrayList(EXTRA_VIDEO, new ArrayList<>(mTrailerList));**/
 
     }
 
@@ -94,13 +78,7 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
     @Override
     public int getItemCount() {
         return (mTrailerList == null) ? 0 : mTrailerList.size();}
-        //return  mTrailerList.size();}
 
-
-       /** public void addAll(ArrayList<Trailer> trailer) {
-            mTrailerList.addAll(trailer);
-            notifyDataSetChanged();
-    }**/
 
 
     public class TrailerViewHolder extends RecyclerView.ViewHolder {
@@ -136,31 +114,10 @@ public class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.TrailerV
                        }
                    }
 
-                   /**Trailer trailerInformation = new Trailer(trailer.getId(), trailer.getKey(),
-                    trailer.getName(), trailer.getSite(),trailer.getTrailerPath());
-
-                    Intent intent = new Intent(mContext, DetailsActivity.class);
-                    intent.putExtra(DetailsActivity.EXTRA_VIDEO, trailerInformation);
-                    intent.putExtra(DetailsActivity.EXTRA_VIDEO_SITE, VIDEO_PATH + trailer.getTrailerPath());
-                    mContext.startActivity(intent);**/
 
                } );
            }
        }
-
-    /**
-     * Retrieve a {@link Trailer} item from the adapter list based on a given position.
-     */
-    public Trailer get(int position) {return mTrailerList.get(position);
-    }
-
-    private void setTrailerName(String name) {
-        trailerTextView.setText(name);
-    }
-
-
-
-
 
    }
 

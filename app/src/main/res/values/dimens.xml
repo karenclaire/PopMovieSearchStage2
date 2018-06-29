@@ -2,10 +2,10 @@
 <resources>
 
     <!-- Height of each movie poster in Main Activity -->
-    <dimen name="poster_height_main">170dp</dimen>
+    <dimen name="poster_height_main">190dp</dimen>
 
     <!-- Width of each movie poster Main Activity -->
-    <dimen name="poster_width_main">130dp</dimen>
+    <dimen name="poster_width_main">150dp</dimen>
 
     <!-- Width and heightof each movie poster Detail Activity -->
     <dimen name="poster_height_detail">200dp</dimen>

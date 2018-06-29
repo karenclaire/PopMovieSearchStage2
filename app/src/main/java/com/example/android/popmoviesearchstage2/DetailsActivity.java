@@ -83,6 +83,8 @@ public class DetailsActivity extends AppCompatActivity {
     TextView titleTextView;
     @BindView(R.id.trailer_container)
     ViewGroup trailerContainer;
+    @BindView(R.id.review_container)
+    ViewGroup reviewContainer;
     //@BindView(R.id.toolbar)
     // Toolbar mToolbar;
     //@BindView(R.id.collapsing_toolbar)
@@ -237,7 +239,7 @@ public class DetailsActivity extends AppCompatActivity {
                 @Override
                    public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
                     Log.d ( DEBUG_TAG, "DetailsActivity onResponse Trailers" );
-                    mTrailerList = response.body ().getTrailers ();
+                    mTrailerList = response.body ().getResults ();
                     mTrailerAdapter.loadTrailers (mTrailerList, mContext);
                     trailerListRecyclerView.smoothScrollToPosition ( 0 );
 
@@ -297,8 +299,8 @@ public class DetailsActivity extends AppCompatActivity {
                 @Override
                 public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
                     Log.d ( DEBUG_TAG, "DetailsActivity onResponseReviews" );
-                    mReviewList = response.body ().getReviews ();
-
+                    mReviewList = response.body ().getResults ();
+                    mReviewAdapter.loadReviews (mReviewList, mContext);
                     reviewRecyclerView.smoothScrollToPosition ( 0 );
 
                 }

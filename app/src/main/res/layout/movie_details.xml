@@ -41,10 +41,11 @@
                 app:layout_constraintTop_toBottomOf="@id/title"
                 tools:src="@drawable/ic_movie_filter_black_24dp" />
 
+
             <LinearLayout
                 android:id="@+id/trailer_container"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="@dimen/poster_height_main"
                 android:layout_marginTop="@dimen/details_top_margin"
                 android:gravity="center"
                 android:orientation="vertical"
@@ -53,76 +54,6 @@
                 tools:layout_editor_absoluteX="192dp"
                 tools:layout_editor_absoluteY="54dp">
 
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="0dp"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/tv_first_trailer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:src="@drawable/ic_ondemand_video_black_24dp" />
-
-                    <TextView
-                        android:id="@+id/trailer1_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="#FFFFFF"
-                        tools:text="@string/first_trailer" />
-
-                </LinearLayout>
-
-
-                <!--<LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/tv_second_trailer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:src="@drawable/ic_ondemand_video_black_24dp" />
-
-                    <TextView
-                        android:id="@+id/trailer2_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="#FFFFFF"
-                        tools:text="@string/second_trailer" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:orientation="horizontal">
-
-                    <ImageButton
-                        android:id="@+id/tv_third_trailer"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:clickable="true"
-                        android:src="@drawable/ic_ondemand_video_black_24dp" />
-
-                    <TextView
-                        android:id="@+id/trailer3_name"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:textColor="#FFFFFF"
-                        tools:text="@string/third_trailer" />
-
-                </LinearLayout>-->
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/trailer_list"
@@ -269,134 +200,21 @@
                     tools:text="@string/overview_placeholder" />
             </LinearLayout>
 
-            <!--<LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/side_margins"
-                android:layout_marginStart="@dimen/side_margins"
-                android:layout_marginTop="@dimen/margin_top_bottom_sides"
-                android:orientation="vertical">
-
-                <TextView
-                    android:id="@+id/tv_director_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
-                    android:text="@string/director" />
-
-                <TextView
-                    android:id="@+id/tv_director"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textColor="#FFFFFF"
-                    android:textSize="@dimen/detail_item_text_size"
-                    tools:text="@string/director_placeholder" />
-
-            </LinearLayout>-->
 
             <LinearLayout
                 android:id="@+id/review_container"
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginLeft="@dimen/side_margins"
                 android:layout_marginStart="@dimen/side_margins"
                 android:layout_marginTop="@dimen/margin_top_bottom_sides"
                 android:orientation="vertical"
                 app:layout_constraintTop_toBottomOf="@id/summary_layout">
-                <!--app:layout_constraintBottom_toBottomOf="parent"-->
 
-                <TextView
-                    android:id="@+id/tv_review_label"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="@string/review"
-                    android:textColor="#FFFFFF" />
-
-                <LinearLayout
-                    android:id="@+id/tv_review_layout"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_review_author"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top_bottom_sides"
-                        android:layout_weight="1"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/detail_item_text_size"
-                        tools:text="@string/reviewer_placeholder" />
-
-                    <TextView
-                        android:id="@+id/review_content"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top_bottom_sides"
-                        android:layout_weight="1"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/detail_item_text_size"
-                        tools:text="@string/review_placeholder" />
-                </LinearLayout>
-
-                <!--<LinearLayout
-                    android:id="@+id/tv_review_layout2"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_review_author2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top_bottom_sides"
-                        android:layout_weight="1"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/detail_item_text_size"
-                        tools:text="@string/reviewer_placeholder" />
-
-                    <TextView
-                        android:id="@+id/tv_review2"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top_bottom_sides"
-                        android:layout_weight="1"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/detail_item_text_size"
-                        tools:text="@string/review_placeholder" />
-
-                </LinearLayout>
-
-                <LinearLayout
-                    android:id="@+id/tv_review_layout3"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="horizontal">
-
-                    <TextView
-                        android:id="@+id/tv_review_author3"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top_bottom_sides"
-                        android:layout_weight="1"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/detail_item_text_size"
-                        tools:text="@string/reviewer_placeholder" />
-
-                    <TextView
-                        android:id="@+id/tv_review3"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_marginTop="@dimen/margin_top_bottom_sides"
-                        android:layout_weight="1"
-                        android:textColor="#FFFFFF"
-                        android:textSize="@dimen/detail_item_text_size"
-                        tools:text="@string/review_placeholder" />
-                </LinearLayout>-->
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/reviews_list"
-                    android:layout_width="match_parent"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content" />
 
             </LinearLayout>
@@ -421,57 +239,3 @@
     </ScrollView>
 </RelativeLayout>
 
-
-    <!--<android.support.design.widget.CoordinatorLayout
-        xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="#000000"
-        android:fitsSystemWindows="true">
-
-        <android.support.design.widget.AppBarLayout
-            android:id="@+id/appbar"
-            android:layout_width="match_parent"
-            android:layout_height="@dimen/backdrop_height"
-            android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-            android:fitsSystemWindows="true">
-
-        <android.support.design.widget.CollapsingToolbarLayout
-            android:id="@+id/collapsing_toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:fitsSystemWindows="true"
-            app:contentScrim ="?attr/colorPrimary"
-            app:expandedTitleMarginEnd = "@dimen/title_marginStart_details"
-            app:expandedTitleMarginStart = "@dimen/title_marginEnd_details"
-            app:layout_scrollFlags = "scroll|exitUntilCollapsed">
-
-            <RelativeLayout
-                android:layout_width="wrap-content"
-                android:layout_height="wrap_content">
-
-                <ImageView
-                    android:id="@+id/image_header"
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent"
-                    android:fitsSystemWindows="true"
-                    android:scaleType="center_crop"
-                    app:layout_collapseMode ="parallax"/>
-            </RelativeLayout>
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:layout_collapseMode ="pin"
-            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"/>
-        </android.support.design.widget.CollapsingToolbarLayout>
-
-        </android.support.design.widget.AppBarLayout>
-
-        <include layout="@layout/content_details" />
-
-
-    </android.support.design.widget.CoordinatorLayout>-->

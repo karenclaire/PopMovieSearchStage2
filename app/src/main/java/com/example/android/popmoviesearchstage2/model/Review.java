@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 public class Review implements Serializable, Parcelable
 {
-            @SerializedName("id")
+        @SerializedName("id")
         @Expose
         private String id;
         @SerializedName("author")

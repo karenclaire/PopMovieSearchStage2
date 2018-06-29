@@ -72,7 +72,7 @@ public class ReviewResponse implements Serializable, Parcelable
         this.page = page;
     }
 
-    public List<Review> getReviews() {
+    public List<Review> getResults() {
         return results;
     }
 
@@ -80,9 +80,7 @@ public class ReviewResponse implements Serializable, Parcelable
         this.results = results;
     }
 
-    public Integer getTotalPages() {
-        return totalPages;
-    }
+    public Integer getTotalPages() {return totalPages;}
 
     public void setTotalPages(Integer totalPages) {
         this.totalPages = totalPages;
