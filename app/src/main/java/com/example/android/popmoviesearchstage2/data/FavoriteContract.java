@@ -3,8 +3,10 @@ package com.example.android.popmoviesearchstage2.data;
 import android.content.ContentResolver;
 import android.net.Uri;
 import android.provider.BaseColumns;
+import android.util.Log;
 
 public class FavoriteContract {
+    public static final String DEBUG_TAG = "DebugStuff";
 
     /**
      * Content authority
@@ -62,5 +64,22 @@ public class FavoriteContract {
         //Movie Poster, STRING, NOT NULL
         public static final String COLUMN_POSTER_PATH ="poster_path";
 
-}
+
+        public static Uri buildFavoriteMoviesUri() {
+            Log.d(DEBUG_TAG, "MovieContract buildFavorieMoviesUri");
+            return BASE_CONTENT_URI.buildUpon()
+                    .appendPath(PATH_MOVIE)
+                    .build();
+        }
+
+        public static Uri buildMovieDetailsUri() {
+            Log.d(DEBUG_TAG, "MovieContract buildMoviesDetailsUri for Favorites");
+            return BASE_CONTENT_URI.buildUpon()
+                    .appendPath(PATH_FAVORITE)
+                    .appendPath(PATH_MOVIE)
+                    .build();
+        }
+
+
+    }
 }

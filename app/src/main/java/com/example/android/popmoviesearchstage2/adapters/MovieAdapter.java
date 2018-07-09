@@ -3,7 +3,7 @@ package com.example.android.popmoviesearchstage2.adapters;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
-import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -111,7 +111,6 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                 .into(holder.posterImageView);
     }
 
-    // I am only running this one
 
 
 
@@ -139,9 +138,11 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
          TextView dateTextView;
          @BindView(R.id.movie_poster)
          ImageView posterImageView;
-         @Nullable
-         @BindView(R.id.favorite_button) //found in movie_details
-                 ImageButton mFavoriteButton;
+
+         //@BindView(R.id.favorite_button) //found in movie_details
+                //ImageButton mFavoriteButton;
+         @BindView ( R.id.fab )
+         FloatingActionButton fab;
          @BindView(R.id.detail_cardview)
          CardView mCardView;
          @BindView(R.id.movie_list_item_layout)

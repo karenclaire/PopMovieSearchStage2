@@ -159,19 +159,19 @@ public class FavoriteProvider extends ContentProvider {
 
             ContentValues values = new ContentValues ();
 
-        /**values.getAsInteger (FavoriteMovieEntry.COLUMN_MOVIE_ID);
+        values.getAsInteger (FavoriteMovieEntry.COLUMN_MOVIE_ID);
         values.getAsString ( FavoriteMovieEntry.COLUMN_TITLE);
         values.getAsString( FavoriteMovieEntry.COLUMN_VOTE_AVERAGE);
         values.getAsString ( FavoriteMovieEntry.COLUMN_RELEASE_DATE);
-        values.getAsString( FavoriteMovieEntry.COLUMN_OVERVIEW);
+        /**values.getAsString( FavoriteMovieEntry.COLUMN_OVERVIEW);
         values.getAsString( FavoriteMovieEntry.COLUMN_POSTER_PATH);**/
 
         values.put (FavoriteMovieEntry.COLUMN_MOVIE_ID, movie.getId ());
         values.put (FavoriteMovieEntry.COLUMN_TITLE, movie.getTitle () );
         values.put (FavoriteMovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage () );
         values.put (FavoriteMovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate () );
-        values.put (FavoriteMovieEntry.COLUMN_OVERVIEW, movie.getOverview () );
-        values.put (FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath () );
+        //values.put (FavoriteMovieEntry.COLUMN_OVERVIEW, movie.getOverview () );
+        //values.put (FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath () );
         //database.insert ( FavoriteMovieEntry.TABLE_NAME, null, values );
         //database.close ();
 

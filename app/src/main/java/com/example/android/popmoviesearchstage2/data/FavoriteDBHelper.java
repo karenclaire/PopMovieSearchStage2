@@ -51,9 +51,9 @@ public class FavoriteDBHelper extends SQLiteOpenHelper {
                 + FavoriteMovieEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL, "
                 + FavoriteMovieEntry.COLUMN_TITLE + " TEXT NOT NULL, "
                 + FavoriteMovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL DEFAULT 0.0, "
-                + FavoriteMovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, "
-                + FavoriteMovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, "
-                + FavoriteMovieEntry.COLUMN_POSTER_PATH + " STRING NOT NULL );";
+                + FavoriteMovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL ) ;";
+                //+ FavoriteMovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, "
+                //+ FavoriteMovieEntry.COLUMN_POSTER_PATH + " STRING NOT NULL );";
 
         // Execute the SQL statement
         db.execSQL ( SQL_CREATE_FAVORITE_TABLE );
@@ -74,8 +74,8 @@ public class FavoriteDBHelper extends SQLiteOpenHelper {
         values.put ( FavoriteMovieEntry.COLUMN_TITLE, movie.getTitle () );
         values.put ( FavoriteMovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage () );
         values.put ( FavoriteMovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate () );
-        values.put ( FavoriteMovieEntry.COLUMN_OVERVIEW, movie.getOverview () );
-        values.put ( FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath () );
+        //values.put ( FavoriteMovieEntry.COLUMN_OVERVIEW, movie.getOverview () );
+        //values.put ( FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath () );
 
         database.insert ( FavoriteMovieEntry.TABLE_NAME, null, values );
         database.close ();
@@ -94,8 +94,8 @@ public class FavoriteDBHelper extends SQLiteOpenHelper {
                 FavoriteMovieEntry.COLUMN_TITLE,
                 FavoriteMovieEntry.COLUMN_VOTE_AVERAGE,
                 FavoriteMovieEntry.COLUMN_RELEASE_DATE,
-                FavoriteMovieEntry.COLUMN_OVERVIEW,
-                FavoriteMovieEntry.COLUMN_POSTER_PATH
+                //FavoriteMovieEntry.COLUMN_OVERVIEW,
+                //FavoriteMovieEntry.COLUMN_POSTER_PATH
         };
 
         String sortOrder = FavoriteMovieEntry._ID + "ASC";
@@ -115,10 +115,10 @@ public class FavoriteDBHelper extends SQLiteOpenHelper {
                 Movie movie = new Movie ();
                 movie.setId ( Integer.parseInt ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_MOVIE_ID ) ) ) );
                 movie.setTitle ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_TITLE ) ) );
-               // movie.setVoteAverage ( String.valueOf ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_VOTE_AVERAGE ) ) ) );
+                movie.setVoteAverage ( cursor.getDouble ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_VOTE_AVERAGE ) ) ) ;
                 movie.setReleaseDate ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_RELEASE_DATE ) ) );
-                movie.setOverview ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_OVERVIEW ) ) );
-                movie.setPosterPath ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_POSTER_PATH ) ) );
+                //movie.setOverview ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_OVERVIEW ) ) );
+                //movie.setPosterPath ( cursor.getString ( cursor.getColumnIndex ( FavoriteMovieEntry.COLUMN_POSTER_PATH ) ) );
 
                 favoriteList.addAll ( Collections.singleton ( movie ) );
             } while (cursor.moveToNext ());
