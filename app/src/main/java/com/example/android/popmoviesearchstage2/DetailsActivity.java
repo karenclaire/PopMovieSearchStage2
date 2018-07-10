@@ -109,10 +109,13 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     @Nullable
     @BindView ( R.id.movie_title)
     TextView favoriteMovieTitle;
+    @Nullable
     @BindView ( R.id.movie_id )
     TextView favoriteMovieId;
     @BindView ( R.id.favorite_release_date )
+    @Nullable
     TextView favoriteReleaseDate;
+    @Nullable
     @BindView ( R.id.favorite_rating )
     TextView favoriteRating;
     @BindView ( R.id.fab )
