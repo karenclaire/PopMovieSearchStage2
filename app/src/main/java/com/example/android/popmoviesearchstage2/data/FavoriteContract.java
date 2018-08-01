@@ -1,6 +1,7 @@
 package com.example.android.popmoviesearchstage2.data;
 
 import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.net.Uri;
 import android.provider.BaseColumns;
 import android.util.Log;
@@ -31,7 +32,7 @@ public class FavoriteContract {
         public static final Uri CONTENT_URI = BASE_CONTENT_URI.buildUpon().appendPath(PATH_FAVORITE).build();
 
         /**
-         * The MIME type of the {@link #CONTENT_URI} for a list of top_rated movies.
+         * The MIME type of the {@link #CONTENT_URI} for a list of favorite movies.
          */
         public static final String CONTENT_LIST_TYPE =
                 ContentResolver.CURSOR_DIR_BASE_TYPE + "/" + CONTENT_AUTHORITY + "/" + PATH_FAVORITE;
@@ -65,19 +66,20 @@ public class FavoriteContract {
         public static final String COLUMN_POSTER_PATH ="poster_path";
 
 
-        public static Uri buildFavoriteMoviesUri() {
-            Log.d(DEBUG_TAG, "MovieContract buildFavorieMoviesUri");
+        public static Uri buildFavoriteMoviesUri(long id) {
+            Log.d(DEBUG_TAG, "MovieContract buildFavoriteMoviesUri");
             return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_MOVIE)
                     .build();
         }
 
-        public static Uri buildMovieDetailsUri() {
+        public static Uri buildMovieDetailsUri(int id) {
             Log.d(DEBUG_TAG, "MovieContract buildMoviesDetailsUri for Favorites");
-            return BASE_CONTENT_URI.buildUpon()
+            return ContentUris.withAppendedId(CONTENT_URI, id);
+            /**return BASE_CONTENT_URI.buildUpon()
                     .appendPath(PATH_FAVORITE)
                     .appendPath(PATH_MOVIE)
-                    .build();
+                    .build();**/
         }
 
 

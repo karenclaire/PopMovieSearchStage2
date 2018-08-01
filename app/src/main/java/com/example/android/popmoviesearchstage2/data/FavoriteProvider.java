@@ -146,14 +146,30 @@ public class FavoriteProvider extends ContentProvider {
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
         final int match = sUriMatcher.match ( uri );
+
+        // Get writable database
+        SQLiteDatabase database = mFavoriteDbHelper.getWritableDatabase();
+
+        Uri returnUri;
+
         switch (match) {
-            case FAVORITE_MOVIE:
-                return addFavorites ( uri );
-            default:
-                throw new IllegalArgumentException ( "Insertion is not supported for " + uri );
+            case FAVORITE_MOVIE: {
+                long _id = database.insert(FavoriteMovieEntry.TABLE_NAME, null, values);
+                if ( _id > 0 )
+                    returnUri = FavoriteMovieEntry.buildFavoriteMoviesUri (_id);
+                else
+                    throw new android.database.SQLException("Insertion is not supported for" + uri);
+                break;
         }
+        default:
+        throw new UnsupportedOperationException("Unknown uri: " + uri);
     }
-        public  Uri addFavorites(Uri uri) {
+      getContext().getContentResolver().notifyChange(uri, null);
+        return returnUri;
+
+
+    }
+       /** public  Uri addFavorites(Uri uri) {
         // Get writable database
         SQLiteDatabase database = mFavoriteDbHelper.getWritableDatabase();
 
@@ -163,17 +179,17 @@ public class FavoriteProvider extends ContentProvider {
         values.getAsString ( FavoriteMovieEntry.COLUMN_TITLE);
         values.getAsString( FavoriteMovieEntry.COLUMN_VOTE_AVERAGE);
         values.getAsString ( FavoriteMovieEntry.COLUMN_RELEASE_DATE);
-        /**values.getAsString( FavoriteMovieEntry.COLUMN_OVERVIEW);
-        values.getAsString( FavoriteMovieEntry.COLUMN_POSTER_PATH);**/
+        values.getAsString( FavoriteMovieEntry.COLUMN_OVERVIEW);
+        values.getAsString( FavoriteMovieEntry.COLUMN_POSTER_PATH);
 
         values.put (FavoriteMovieEntry.COLUMN_MOVIE_ID, movie.getId ());
         values.put (FavoriteMovieEntry.COLUMN_TITLE, movie.getTitle () );
         values.put (FavoriteMovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage () );
         values.put (FavoriteMovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate () );
-        //values.put (FavoriteMovieEntry.COLUMN_OVERVIEW, movie.getOverview () );
-        //values.put (FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath () );
-        //database.insert ( FavoriteMovieEntry.TABLE_NAME, null, values );
-        //database.close ();
+        values.put (FavoriteMovieEntry.COLUMN_OVERVIEW, movie.getOverview () );
+        values.put (FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath () );
+        database.insert ( FavoriteMovieEntry.TABLE_NAME, null, values );
+        database.close ();
 
         // Insert the new item with the given values
         long id =database.insert ( FavoriteMovieEntry.TABLE_NAME, null, values );
@@ -187,7 +203,7 @@ public class FavoriteProvider extends ContentProvider {
 
         // Return Content Uri
         return ContentUris.withAppendedId(uri, id);
-    }
+    }**/
 
 
     @Override
@@ -209,30 +225,22 @@ public class FavoriteProvider extends ContentProvider {
                  //   getContext ().getContentResolver ().notifyChange ( uri, null );
                 }
 
+
+            if (selection == null || favoriteMovieRemoved != 0) {
+            getContext().getContentResolver().notifyChange(uri, null);
+            }
+
                // Return the number of rows deleted
         return favoriteMovieRemoved;
-        }
+    }
 
 
     @Override
     public int update(@NonNull Uri uri, @Nullable ContentValues values, @Nullable String selection, @Nullable String[] selectionArgs) {
-            final SQLiteDatabase database = mFavoriteDbHelper.getWritableDatabase();
-
-            final int match = sUriMatcher.match(uri);
-            int favoritesUpdated;
-            switch (match){
-            case FAVORITE_MOVIE: {
-                selection = FavoriteMovieEntry._ID + "=?";
-                selectionArgs = new String[]{String.valueOf ( ContentUris.parseId ( uri ) )};
-                favoritesUpdated = database.update ( FavoriteMovieEntry.TABLE_NAME, values, selection,
-                        selectionArgs );
-                break;
-            }
-                default:
-                    throw new IllegalArgumentException("Update is not supported for " + uri);
+         throw new IllegalArgumentException("Update is not supported for " + uri);
 
     }
-    return favoritesUpdated;
 
-    }
+
+
 }

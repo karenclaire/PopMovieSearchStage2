@@ -7,7 +7,7 @@ package com.example.android.popmoviesearchstage2.loaders;
 
 public class MovieLoader { /*
  extends AsyncTaskLoader<List<Movie>>  {
-    private static final String DEBUG_TAG = "Debug";
+    private static final String DEBUG_TAG = "DebugStuff";
 
     */
 /**

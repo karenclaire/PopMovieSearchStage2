@@ -74,7 +74,7 @@ public class Movie implements Serializable, Parcelable
         }
 
     };
-    private final static long serialVersionUID = -1823037059370903192L;
+
 
     protected Movie(Parcel in) {
         this.voteCount = ((Integer) in.readValue((Integer.class.getClassLoader())));

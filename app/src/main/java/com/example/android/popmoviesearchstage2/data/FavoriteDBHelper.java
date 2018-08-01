@@ -51,9 +51,9 @@ public class FavoriteDBHelper extends SQLiteOpenHelper {
                 + FavoriteMovieEntry.COLUMN_MOVIE_ID + " TEXT NOT NULL, "
                 + FavoriteMovieEntry.COLUMN_TITLE + " TEXT NOT NULL, "
                 + FavoriteMovieEntry.COLUMN_VOTE_AVERAGE + " REAL NOT NULL DEFAULT 0.0, "
-                + FavoriteMovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL ) ;";
-                //+ FavoriteMovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, "
-                //+ FavoriteMovieEntry.COLUMN_POSTER_PATH + " STRING NOT NULL );";
+                + FavoriteMovieEntry.COLUMN_RELEASE_DATE + " TEXT NOT NULL, "
+                + FavoriteMovieEntry.COLUMN_OVERVIEW + " TEXT NOT NULL, "
+                + FavoriteMovieEntry.COLUMN_POSTER_PATH + " STRING NOT NULL );";
 
         // Execute the SQL statement
         db.execSQL ( SQL_CREATE_FAVORITE_TABLE );
@@ -74,19 +74,19 @@ public class FavoriteDBHelper extends SQLiteOpenHelper {
         values.put ( FavoriteMovieEntry.COLUMN_TITLE, movie.getTitle () );
         values.put ( FavoriteMovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage () );
         values.put ( FavoriteMovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate () );
-        //values.put ( FavoriteMovieEntry.COLUMN_OVERVIEW, movie.getOverview () );
-        //values.put ( FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath () );
+        values.put ( FavoriteMovieEntry.COLUMN_OVERVIEW, movie.getOverview () );
+        values.put ( FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath () );
 
         database.insert ( FavoriteMovieEntry.TABLE_NAME, null, values );
         database.close ();
 
     }
 
-    public void deleteFavorite(int id) {
+    /**public void deleteFavorite(int id) {
         SQLiteDatabase database = this.getWritableDatabase ();
         database.delete ( FavoriteMovieEntry.TABLE_NAME,
                 FavoriteMovieEntry.COLUMN_MOVIE_ID + "=" + id, null );
-    }
+    }**/
 
     public List<Movie> getAllFavoriteMovies() {
         String movieColumns[] = {FavoriteMovieEntry._ID,

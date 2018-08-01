@@ -132,6 +132,11 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     Uri mFavoriteMovieUri;
     private Movie mMovie;
     private String posterPath;
+    int id;
+
+    static final int POPULAR = 1;
+    static final int NOT_POPULAR = 2;
+    static final int ERROR = 3;
 
     public static String getYear(String dateString) {
         Calendar calendar = Calendar.getInstance ();
@@ -167,33 +172,32 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Intent intent = new Intent(DetailsActivity.this, MainActivity.class);
-                startActivity(intent);
 
-                int id = mMovie.getId ();
                 ContentResolver resolver = view.getContext().getContentResolver();
-
                 ContentValues values = new ContentValues();
-                // If the isFavorite equal to favoriteMovie, the currentMovie list will be added to the Favorite Movie List;
-                if (isFavorite = true){
-                    mFavoriteMovieUri = FavoriteMovieEntry.buildMovieDetailsUri();
-                    resolver.update(
-                            mFavoriteMovieUri,
-                            values,
-                            null,
-                            null
-
+                // If the isFavorite equal to true, the Current Movie will be added to the Favorite Movie List;
+                if (isFavorite == true){
+                    mFavoriteMovieUri = FavoriteMovieEntry.buildMovieDetailsUri(id);
+                    resolver.insert(
+                             mFavoriteMovieUri,
+                            values
                     );
-                    saveFavorite ();
+                    //saveFavorite ();
+                    isMovieInDB ( resolver, mMovie );
+                    changeMovieStatus ( resolver, mMovie, false );
 
-                    fab.setImageResource(R.drawable.yellow_star);
+
+
+                    setFavoriteFabIcon ();
+                    //fab.setImageResource(R.drawable.yellow_star);
                     Toast.makeText(mContext, "Movie is now in Favorite list", Toast.LENGTH_SHORT).show();
                     mContext.getContentResolver().notifyChange(mFavoriteMovieUri, null);
                 } else {
                     // Not a favorite
-                    favoriteDBHelper = new FavoriteDBHelper ( mContext );
+                    setFavoriteFabIcon ();
+                    /**favoriteDBHelper = new FavoriteDBHelper ( mContext );
                     favoriteDBHelper.deleteFavorite ( id );
-                    fab.setImageResource(R.drawable.ic_star_white_24dp);
+                    fab.setImageResource(R.drawable.ic_star_white_24dp);**/
                     Toast.makeText(mContext, "Movie not in Favorite List", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -233,6 +237,39 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         } );**/
 
        initViews ();
+    }
+    private void setFavoriteFabIcon() {
+        boolean inFavorites = checkFavorites(mMovie.getId());
+        ImageView addToFav = findViewById(R.id.fab);
+
+        if (inFavorites) {
+            addToFav.setImageResource(R.drawable.yellow_star);
+        } else {
+            addToFav.setImageResource(R.drawable.ic_star_white_24dp);
+        }
+    }
+
+
+    private boolean checkFavorites(int id) {
+
+        Uri uri = FavoriteMovieEntry.buildMovieDetailsUri (id );
+        ContentResolver resolver = this.getContentResolver();
+        Cursor cursor = null;
+
+        try {
+
+            cursor = resolver.query(uri, null, null, null, null);
+            if (cursor.moveToFirst())
+                return true;
+
+        } finally {
+
+            if (cursor != null)
+                cursor.close();
+
+        }
+
+        return false;
     }
 
     public void showMovieDetails() {
@@ -340,9 +377,15 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         favoriteMovies.setVoteAverage(voteAverage);
         favoriteMovies.setReleaseDate ( releaseDate );
         //favoriteMovies.setPosterPath ( posterPath );
-
-
         favoriteDBHelper.addFavorites ( favoriteMovies );
+
+
+       /** posterPath = POSTER_PATH +(mMovie.getPosterPath ());
+        Picasso.with ( mContext ).setLoggingEnabled ( true );
+
+        Picasso.with ( posterImageView.getContext ())
+                .load ( posterPath )
+                .into ( posterImageView );**/
 
         // Determine if this is a new or existing item  by checking if mFavoriteMovieUri is null or not
         if (mFavoriteMovieUri == null) {
@@ -443,7 +486,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.d (DEBUG_TAG, "DetailsActivity onCreateLoader");
         // Since the favorite list shows the poster, rating and release date attributes,
-        // the projection contains these columns from the inventory table
+        // the projection contains these columns from the favorite movie table
         String[] projection = {
                 FavoriteMovieEntry._ID,
                 FavoriteMovieEntry.COLUMN_MOVIE_ID,
@@ -506,6 +549,55 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         favoriteRating.setText ( "" );
         favoriteReleaseDate.setText ( "" );
 
+    }
+
+
+    static boolean isMovieInDB(ContentResolver contentResolver, Movie movie) {
+        Log.d (DEBUG_TAG, " isMovieInDB:start - movieId: " + movie.getId ());
+        Cursor cursor = null;
+        try {
+            cursor = contentResolver.query(
+                    FavoriteMovieEntry.buildMovieDetailsUri (movie.getId ()),
+                    null, null, null, null);
+
+            return ((cursor != null) && (cursor.getCount() > 0));
+        } finally {
+            if (cursor != null) cursor.close();
+        }
+    }
+
+    static int changeMovieStatus(ContentResolver contentResolver, Movie movie, Boolean popular) {
+
+        if (popular == null) {
+            popular = isMovieInDB(contentResolver, movie);
+        }
+        if (popular) {
+            // delete from database
+            int deleted = contentResolver.delete(
+                    FavoriteMovieEntry.buildMovieDetailsUri ( movie.getId()),
+                    null, null);
+
+            if (deleted > 0) return NOT_POPULAR;
+            else return ERROR;
+        } else {
+            // insert to database
+            ContentValues values = new ContentValues();
+            values.clear();
+            values.put (FavoriteMovieEntry.COLUMN_MOVIE_ID, movie.getId ());
+            values.put (FavoriteMovieEntry.COLUMN_TITLE, movie.getTitle () );
+            values.put (FavoriteMovieEntry.COLUMN_VOTE_AVERAGE, movie.getVoteAverage () );
+            values.put (FavoriteMovieEntry.COLUMN_RELEASE_DATE, movie.getReleaseDate () );
+            values.put (FavoriteMovieEntry.COLUMN_OVERVIEW, movie.getOverview () );
+            values.put (FavoriteMovieEntry.COLUMN_POSTER_PATH, movie.getPosterPath () );
+
+
+            Uri insertResult = contentResolver.insert(
+                    FavoriteMovieEntry.buildMovieDetailsUri (movie.getId()),
+                    values);
+
+            if (insertResult != null) return POPULAR;
+            else return ERROR;
+        }
     }
 }
 
