@@ -48,10 +48,10 @@
                 android:value="com.example.android.popmoviesearchstage2.MainActivity"/>
         </activity>
         <provider
-            android:name=".data.FavoriteProvider"
-            android:authorities="com.example.android.popmoviesearchstage2"
-            android:exported="false"
-            android:grantUriPermissions="true"/>
+        android:name=".data.FavoriteProvider"
+        android:authorities="com.example.android.popmoviesearchstage2.provider"
+        android:exported="false"
+        android:grantUriPermissions="true"/>
 
 
     </application>

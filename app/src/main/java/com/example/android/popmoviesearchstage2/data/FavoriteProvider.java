@@ -61,8 +61,8 @@ public class FavoriteProvider extends ContentProvider {
         // This URI is used to provide access to ONE single row of the chosen movie table.
         // In this case, the "#" wildcard is used where "#" can be substituted for an integer.
         //
-       sUriMatcher.addURI(FavoriteContract.CONTENT_AUTHORITY, FavoriteContract.PATH_FAVORITE + "/#" +
-                FavoriteContract.PATH_MOVIE + "/#", FAVORITE_MOVIE_DETAIL);
+       sUriMatcher.addURI(FavoriteContract.CONTENT_AUTHORITY, FavoriteContract.PATH_FAVORITE
+                       + "/#" , FAVORITE_MOVIE_DETAIL);
     }
 
     /**
@@ -128,6 +128,7 @@ public class FavoriteProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
+        Log.d(DEBUG_TAG,"Movie Provider Cursor getType: uri: " + uri.toString());
         final int match = sUriMatcher.match ( uri );
         switch (match) {
             case FAVORITE_MOVIE: {
@@ -145,6 +146,7 @@ public class FavoriteProvider extends ContentProvider {
     @Nullable
     @Override
     public Uri insert(@NonNull Uri uri, @Nullable ContentValues values) {
+        Log.d(DEBUG_TAG,"Movie Provider Cursor insert - uri: " + uri.toString());
         final int match = sUriMatcher.match ( uri );
 
         // Get writable database
@@ -156,7 +158,7 @@ public class FavoriteProvider extends ContentProvider {
             case FAVORITE_MOVIE: {
                 long _id = database.insert(FavoriteMovieEntry.TABLE_NAME, null, values);
                 if ( _id > 0 )
-                    returnUri = FavoriteMovieEntry.buildFavoriteMoviesUri (_id);
+                    returnUri = FavoriteMovieEntry.buildFavoriteMoviesUri ();
                 else
                     throw new android.database.SQLException("Insertion is not supported for" + uri);
                 break;

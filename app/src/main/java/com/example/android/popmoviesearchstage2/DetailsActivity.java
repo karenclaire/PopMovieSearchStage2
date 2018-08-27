@@ -172,39 +172,34 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Log.d(DEBUG_TAG,"OnCreate: fab.onClick");
 
                 ContentResolver resolver = view.getContext().getContentResolver();
                 ContentValues values = new ContentValues();
                 // If the isFavorite equal to true, the Current Movie will be added to the Favorite Movie List;
-                if (isFavorite == true){
-                    mFavoriteMovieUri = FavoriteMovieEntry.buildMovieDetailsUri(id);
+                /**if (isFavorite == true){
+                 /**  mFavoriteMovieUri = FavoriteMovieEntry.buildMovieDetailsUri(id);
                     resolver.insert(
                              mFavoriteMovieUri,
                             values
                     );
-                    //saveFavorite ();
-                    isMovieInDB ( resolver, mMovie );
+                    //saveFavorite ();**/
+                    //setFavoriteFabIcon ();
+                   //if(isMovieInDB ( resolver, mMovie )){
+                    isMovieInDB ( resolver, mMovie);
                     changeMovieStatus ( resolver, mMovie, false );
-
-
-
-                    setFavoriteFabIcon ();
-                    //fab.setImageResource(R.drawable.yellow_star);
+                    /**fab.setImageResource(R.drawable.yellow_star);
                     Toast.makeText(mContext, "Movie is now in Favorite list", Toast.LENGTH_SHORT).show();
                     mContext.getContentResolver().notifyChange(mFavoriteMovieUri, null);
                 } else {
                     // Not a favorite
-                    setFavoriteFabIcon ();
+                    //setFavoriteFabIcon ();
                     /**favoriteDBHelper = new FavoriteDBHelper ( mContext );
                     favoriteDBHelper.deleteFavorite ( id );
-                    fab.setImageResource(R.drawable.ic_star_white_24dp);**/
-                    Toast.makeText(mContext, "Movie not in Favorite List", Toast.LENGTH_SHORT).show();
+                    fab.setImageResource(R.drawable.ic_star_white_24dp);
+                    Toast.makeText(mContext, "Movie not in Favorite List", Toast.LENGTH_SHORT).show();**/
                 }
-            }
-        });
-
-
-
+            });
 
 
        /** SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences ( getApplicationContext () );
@@ -238,7 +233,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
        initViews ();
     }
-    private void setFavoriteFabIcon() {
+
+   /** private void setFavoriteFabIcon() {
         boolean inFavorites = checkFavorites(mMovie.getId());
         ImageView addToFav = findViewById(R.id.fab);
 
@@ -247,10 +243,10 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         } else {
             addToFav.setImageResource(R.drawable.ic_star_white_24dp);
         }
-    }
+    }**/
 
 
-    private boolean checkFavorites(int id) {
+    /**private boolean checkFavorites(int id) {
 
         Uri uri = FavoriteMovieEntry.buildMovieDetailsUri (id );
         ContentResolver resolver = this.getContentResolver();
@@ -270,7 +266,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         }
 
         return false;
-    }
+    }**/
 
     public void showMovieDetails() {
         Log.d ( DEBUG_TAG, "DetailsActivity showMovieDetails" );
@@ -362,7 +358,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         Double voteAverage = getIntent ().getExtras ().getDouble ( "vote_average" );
         String movieTitle = getIntent ().getExtras ().getString ( "original_title" );
         String releaseDate = getIntent ().getExtras ().getString ( "release_date" );
-        //String posterPath = getIntent ().getExtras ().getString ( "poster_path" );
+        String posterPath = getIntent ().getExtras ().getString ( "poster_path" );
 
 
         // Read from input fields
@@ -376,7 +372,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         favoriteMovies.setTitle ( movieTitle );
         favoriteMovies.setVoteAverage(voteAverage);
         favoriteMovies.setReleaseDate ( releaseDate );
-        //favoriteMovies.setPosterPath ( posterPath );
+        favoriteMovies.setPosterPath ( posterPath );
         favoriteDBHelper.addFavorites ( favoriteMovies );
 
 
@@ -520,14 +516,14 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             // Find the columns of item attributes that we're interested in
             int id = cursor.getInt(cursor.getColumnIndex(FavoriteMovieEntry._ID));
             int titleColumnIndex = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_TITLE);
-            //int posterPathColumnIndex = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_POSTER_PATH);
+            int posterPathColumnIndex = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_POSTER_PATH);
             int voteAverageColumnIndex = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_VOTE_AVERAGE);
             int releaseDateColumnIndex = cursor.getColumnIndex(FavoriteMovieEntry.COLUMN_RELEASE_DATE);
 
             // Extract out the value from the Cursor for the given column index
            String movieId = cursor.getString(id);
            String movieTitle = cursor.getString(titleColumnIndex);
-           //String poster = cursor.getString(posterPathColumnIndex);
+           String poster = cursor.getString(posterPathColumnIndex);
            String vote = cursor.getString(voteAverageColumnIndex);
            String releaseDate = cursor.getString(releaseDateColumnIndex);
 

@@ -12,7 +12,7 @@ public class FavoriteContract {
     /**
      * Content authority
      */
-    public static final String CONTENT_AUTHORITY = "com.example.android.popmoviesearchstage2";
+    public static final String CONTENT_AUTHORITY = "com.example.android.popmoviesearchstage2.provider";
 
     /**
      * Base of all URI's which apps will use to contact the content provider.
@@ -66,10 +66,10 @@ public class FavoriteContract {
         public static final String COLUMN_POSTER_PATH ="poster_path";
 
 
-        public static Uri buildFavoriteMoviesUri(long id) {
+        public static Uri buildFavoriteMoviesUri() {
             Log.d(DEBUG_TAG, "MovieContract buildFavoriteMoviesUri");
             return BASE_CONTENT_URI.buildUpon()
-                    .appendPath(PATH_MOVIE)
+                    .appendPath(PATH_FAVORITE)
                     .build();
         }
 
