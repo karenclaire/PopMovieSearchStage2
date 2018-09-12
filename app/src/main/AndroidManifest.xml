@@ -47,11 +47,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.example.android.popmoviesearchstage2.MainActivity"/>
         </activity>
-        <provider
+        <!--provider
         android:name=".data.FavoriteProvider"
         android:authorities="com.example.android.popmoviesearchstage2.provider"
         android:exported="false"
-        android:grantUriPermissions="true"/>
+        android:grantUriPermissions="true"/-->
 
 
     </application>

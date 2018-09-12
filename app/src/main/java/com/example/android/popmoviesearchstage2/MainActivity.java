@@ -25,6 +25,8 @@ package com.example.android.popmoviesearchstage2;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.ContextWrapper;
 import android.content.Intent;
@@ -34,6 +36,7 @@ import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
+import android.support.annotation.Nullable;
 import android.support.v4.content.CursorLoader;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
@@ -42,12 +45,16 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageButton;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.android.popmoviesearchstage2.adapters.MovieAdapter;
+import com.example.android.popmoviesearchstage2.data.FavoriteAppDatabase;
 import com.example.android.popmoviesearchstage2.data.FavoriteDBHelper;
+import com.example.android.popmoviesearchstage2.data.FavoriteEntry;
+import com.example.android.popmoviesearchstage2.data.MainViewModel;
 import com.example.android.popmoviesearchstage2.model.Movie;
 import com.example.android.popmoviesearchstage2.model.MovieResponse;
 import com.example.android.popmoviesearchstage2.retrofit.MovieInterface;
@@ -56,6 +63,7 @@ import com.example.android.popmoviesearchstage2.retrofit.RetrofitClient;
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.BindView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -116,6 +124,8 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
     private GridLayoutManager layoutManager;
     ProgressDialog progressDialog;
 
+    @BindView(R.id.favorite_button)
+    ImageButton mFavoriteButton;
 
     //private final AppCompatActivity activity = MainActivity.this;
 
@@ -124,6 +134,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
     private static final String MOVIE_REQUEST_URL = "http://api.themoviedb.org/3/movie/popular?api_key=";
     private static final String MOVIE_TOP_RATED_URL = "http://api.themoviedb.org/3/movie/top_rated?api_key=";
 
+    private FavoriteAppDatabase mDb;
 
     CursorLoader mCursorLoader;
     Cursor mCursor;
@@ -157,6 +168,8 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
         setContentView(R.layout.activity_main);
 
         initViews();
+
+
 
            }
 
@@ -196,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
 
         checkSortOrder();
     }
-
+    //TODO: Change this to PopulateUI, Room way
     public void viewFavorite(){
         mRecyclerView =findViewById ( R.id.recyclerview_grid );
         moviesList = new ArrayList<> ( );
@@ -370,15 +383,15 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
         String preferenceSortOrder = sharedPrefs.getString(getString(R.string.pref_sorting_criteria_key),
                 getString(R.string.pref_sorting_criteria_default_value));
 
-        if (preferenceSortOrder.equals(this.getString(R.string.pref_sorting_criteria_default_value))){
-            Toast.makeText ( this, "Sort order set to Popular", Toast.LENGTH_SHORT).show ();
-            loadPopular();
+        if (preferenceSortOrder.equals(this.getString(R.string.pref_sorting_criteria_top_rated))){
+            Toast.makeText ( this, "Sort order set to Highest Rated", Toast.LENGTH_SHORT).show ();
+            loadTopRated();
         } else if (preferenceSortOrder.equals (this.getString(R.string.pref_sorting_criteria_favorite))){
             Toast.makeText ( this, "Sort order set to Favorite", Toast.LENGTH_SHORT).show ();
             viewFavorite();
         }else {
-            Toast.makeText ( this, "Sort order set to Highest Rated", Toast.LENGTH_SHORT).show ();
-            loadTopRated();
+            Toast.makeText ( this, "Sort order set to Popular", Toast.LENGTH_SHORT).show ();
+            loadPopular();
 
         }
 
@@ -394,7 +407,19 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
         }
     }
 
+    private void setupViewModel() {
+        MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
+        viewModel.getFavoriteEntry ().observe(this, new Observer<List<FavoriteEntry>> () {
+            @Override
+            public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
+                Log.d(DEBUG_TAG, "Updating list of tasks from LiveData in ViewModel");
+               // mMovieAdapter.setTask(favoriteEntries);
+            }
+        });
+    }
 
+    //TODO: Add method that will retrieve all movies using Room
+    //TODO: Add method that will populateTheUI(or has this been covered?)
 
     public void getAllFavoriteMovies(){
         new AsyncTask <Void, Void, Void>(){

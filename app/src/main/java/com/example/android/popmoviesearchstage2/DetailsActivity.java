@@ -1,17 +1,11 @@
 package com.example.android.popmoviesearchstage2;
 
-import android.app.LoaderManager;
-import android.content.ContentResolver;
-import android.content.ContentValues;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
-import android.content.CursorLoader;
 import android.content.Intent;
-import android.content.Loader;
-import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -25,10 +19,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.android.popmoviesearchstage2.adapters.MovieAdapter;
 import com.example.android.popmoviesearchstage2.adapters.ReviewAdapter;
 import com.example.android.popmoviesearchstage2.adapters.TrailerAdapter;
-import com.example.android.popmoviesearchstage2.data.FavoriteContract.FavoriteMovieEntry;
+import com.example.android.popmoviesearchstage2.data.DetailsViewModel;
+import com.example.android.popmoviesearchstage2.data.DetailsViewModelFactory;
+import com.example.android.popmoviesearchstage2.data.FavoriteAppDatabase;
 import com.example.android.popmoviesearchstage2.data.FavoriteDBHelper;
+import com.example.android.popmoviesearchstage2.data.FavoriteEntry;
 import com.example.android.popmoviesearchstage2.model.Movie;
 import com.example.android.popmoviesearchstage2.model.Review;
 import com.example.android.popmoviesearchstage2.model.ReviewResponse;
@@ -64,26 +62,44 @@ import retrofit2.Response;
  * 7)https://gist.github.com/riyazMuhammad/1c7b1f9fa3065aa5a46f
  */
 
-public class DetailsActivity extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class DetailsActivity extends AppCompatActivity {
+
+    private static final String LOG_TAG = DetailsActivity.class.getSimpleName ();
+    private static final String DEBUG_TAG = "DebugStuff";
 
     public static final String EXTRA_MOVIE = "intent_extra_movie";
-    public static final String EXTRA_POSTER = "intent_poster_movie";
     public static final String EXTRA_VIDEO = "intent_video";
     public static final String EXTRA_VIDEO_SITE = "intent_video_site";
     public static final String EXTRA_REVIEW = "intent_review";
     public static final String EXTRA_REVIEW_SITE = "intent_review_site";
+
     public static final String VIDEO_PATH = "https://www.youtube.com/watch?v=";
     public static final String POSTER_PATH = "http://image.tmdb.org/t/p/w185/";
-    private static final String LOG_TAG = DetailsActivity.class.getSimpleName ();
-    private static final String DEBUG_TAG = "DebugStuff";
+
+    //Extra for Movie ID to be received by intent
+    static final int DEF_POPULAR = 1;
+    static final int NOT_POPULAR = 2;
+    static final int ERROR = 3;
+
+    // Extra for the ID to be received after rotation
+    public static final String INSTANCE_MOVIE_ID = "instanceMovieId";
+
     static public String favoriteMovie;
-    public ImageButton mFavoriteButton;
+
+    private final String TOP_RATED = "top_rated";
+    private final String FAVORITE = "favorite";
+    private final String POPULAR = "popular";
+
+
     public List<Movie> moviesList = new ArrayList<> ();
+    public final MovieAdapter mMovieAdapter = new MovieAdapter ( this, moviesList );
+
     public List<Review> mReviewList = new ArrayList<> ();
-    public final ReviewAdapter mReviewAdapter = new ReviewAdapter( this, mReviewList );
-    public Movie favoriteMovies;
+    public final ReviewAdapter mReviewAdapter = new ReviewAdapter ( this, mReviewList );
+
     public List<Trailer> mTrailerList = new ArrayList<> ();
     private final TrailerAdapter mTrailerAdapter = new TrailerAdapter ( this, mTrailerList );
+
     @BindView(R.id.tv_rating)
     TextView ratingTextView;
     @BindView(R.id.tv_date)
@@ -92,51 +108,58 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     ImageView posterImageView;
     @BindView(R.id.summary)
     TextView overviewTextView;
+    String overview;
+
     @BindView(R.id.title)
+
     TextView titleTextView;
     @BindView(R.id.trailer_container)
     ViewGroup trailerContainer;
     @BindView(R.id.review_container)
     ViewGroup reviewContainer;
-    //@BindView(R.id.toolbar)
-    // Toolbar mToolbar;
-    //@BindView(R.id.collapsing_toolbar)
-    //CollapsingToolbarLayout mCollapsingToolBar;
-    //@BindView( (R.id.appBar))
-    //AppBarLayout mAppBar;
-    //@BindView(R.id.favorite_button)
-    //MaterialFavoriteButton materialFavoriteButton;
+
     @Nullable
-    @BindView ( R.id.movie_title)
+    @BindView(R.id.movie_title)
     TextView favoriteMovieTitle;
     @Nullable
-    @BindView ( R.id.movie_id )
+    @BindView(R.id.movie_id)
     TextView favoriteMovieId;
-    @BindView ( R.id.favorite_release_date )
+
+    @BindView(R.id.favorite_release_date)
     @Nullable
     TextView favoriteReleaseDate;
+    String releaseDate;
+
     @Nullable
-    @BindView ( R.id.favorite_rating )
+    @BindView(R.id.favorite_rating)
     TextView favoriteRating;
-    @BindView ( R.id.fab )
-    FloatingActionButton fab;
+    Double voteAverage;
+
+    @BindView(R.id.favorite_button)
+    ImageButton mFavoriteButton;
+    //@BindView ( R.id.fab )
+    //FloatingActionButton fab;
+
     Context mContext;
     //private final AppCompatActivity activity = DetailsActivity.this;
     @BindView(R.id.reviews_list)
     RecyclerView reviewRecyclerView;
+
     FavoriteDBHelper favoriteDBHelper;
     @BindView(R.id.trailer_list)
     RecyclerView trailerListRecyclerView;
+
     boolean isFavorite;
     int favorite;
-    Uri mFavoriteMovieUri;
+    //Uri mFavoriteMovieUri;
     private Movie mMovie;
     private String posterPath;
-    int id;
 
-    static final int POPULAR = 1;
-    static final int NOT_POPULAR = 2;
-    static final int ERROR = 3;
+    private static final int DEFAULT_MOVIE_ID = -1;
+    private int mId = DEFAULT_MOVIE_ID;
+
+
+    private FavoriteAppDatabase mDb;
 
     public static String getYear(String dateString) {
         Calendar calendar = Calendar.getInstance ();
@@ -161,129 +184,163 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         Intent intent = getIntent ();
 
-        mFavoriteMovieUri = intent.getData();
+        //mFavoriteMovieUri = intent.getData();
 
 
         mMovie = intent.getParcelableExtra ( DetailsActivity.EXTRA_MOVIE );
-        showMovieDetails();
-
-       // Setup FAB to open EditorActivity
-        final FloatingActionButton fab =  findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Log.d(DEBUG_TAG,"OnCreate: fab.onClick");
-
-                ContentResolver resolver = view.getContext().getContentResolver();
-                ContentValues values = new ContentValues();
-                // If the isFavorite equal to true, the Current Movie will be added to the Favorite Movie List;
-                /**if (isFavorite == true){
-                 /**  mFavoriteMovieUri = FavoriteMovieEntry.buildMovieDetailsUri(id);
-                    resolver.insert(
-                             mFavoriteMovieUri,
-                            values
-                    );
-                    //saveFavorite ();**/
-                    //setFavoriteFabIcon ();
-                   //if(isMovieInDB ( resolver, mMovie )){
-                    isMovieInDB ( resolver, mMovie);
-                    changeMovieStatus ( resolver, mMovie, false );
-                    /**fab.setImageResource(R.drawable.yellow_star);
-                    Toast.makeText(mContext, "Movie is now in Favorite list", Toast.LENGTH_SHORT).show();
-                    mContext.getContentResolver().notifyChange(mFavoriteMovieUri, null);
-                } else {
-                    // Not a favorite
-                    //setFavoriteFabIcon ();
-                    /**favoriteDBHelper = new FavoriteDBHelper ( mContext );
-                    favoriteDBHelper.deleteFavorite ( id );
-                    fab.setImageResource(R.drawable.ic_star_white_24dp);
-                    Toast.makeText(mContext, "Movie not in Favorite List", Toast.LENGTH_SHORT).show();**/
-                }
-            });
+        showMovieDetails ();
 
 
-       /** SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences ( getApplicationContext () );
-        materialFavoriteButton.setOnFavoriteChangeListener ( new MaterialFavoriteButton.OnFavoriteChangeListener () {
-            @Override
-            public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
-                if (favorite) {
-                    SharedPreferences.Editor editor = getSharedPreferences
-                            ( "com.example.android.popmoviesearchstage2.DetailsActivity", MODE_PRIVATE ).edit ();
-                    editor.putBoolean ( "Favorite Added", true );
-                    materialFavoriteButton.setImageResource(R.drawable.yellow_star);
-                    editor.apply ();
-                    saveFavorite ();
-                    Snackbar.make ( buttonView, "Added to Favorite", Snackbar.LENGTH_SHORT ).show ();
-                } else {
-                    int id = mMovie.getId ();
-                    favoriteDBHelper = new FavoriteDBHelper ( mContext );
-                    favoriteDBHelper.deleteFavorite ( id );
-                    SharedPreferences.Editor editor = getSharedPreferences
-                            ( "com.example.android.popmoviesearchstage2.DetailsActivity", MODE_PRIVATE ).edit ();
-                    editor.putBoolean ( "Favorite Removed", true );
-                    materialFavoriteButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
-                    editor.apply ();
-                    Snackbar.make ( buttonView, "Removed from Favorite", Snackbar.LENGTH_SHORT ).show ();
+        mDb = FavoriteAppDatabase.getInstance ( getApplicationContext () );
 
-                }
+        initViews ();
+
+        //TODO: Fix line 192 to 221: 1) Preference must not change upon rotation
+        //TODO: Check if I need the INSTANCE_MOVIE_ID when I have in my manifest:
+        // android:configChanges="orientation|keyboardHidden|screenSize"
+        if (savedInstanceState != null && savedInstanceState.containsKey ( INSTANCE_MOVIE_ID )) {
+            mId = savedInstanceState.getInt ( INSTANCE_MOVIE_ID, DEF_POPULAR );
+        }
+
+        //TODO: Fix this part so that : Favorite movie is shown when Favorite movie is shown in settings
+        if (intent != null && intent.hasExtra ( FAVORITE )) {
+
+            if (mId == DEFAULT_MOVIE_ID) {
+                // populate the UI
+                mId = intent.getIntExtra ( EXTRA_MOVIE, DEFAULT_MOVIE_ID );
+
+                // Declare a AddTaskViewModelFactory using mDb and mTaskId
+                DetailsViewModelFactory factory = new DetailsViewModelFactory ( mDb, mId );
+                // Declare a AddTaskViewModel variable and initialize it by calling ViewModelProviders.of
+                // for that use the factory created above AddTaskViewModel
+                final DetailsViewModel viewModel
+                        = ViewModelProviders.of ( this, factory ).get ( DetailsViewModel.class );
+
+                //  Observe the LiveData object in the ViewModel. Use it also when removing the observer
+                viewModel.getFavorite ().observe ( this, new Observer<FavoriteEntry> () {
+                    @Override
+                    public void onChanged(@Nullable FavoriteEntry favoriteEntry) {
+                        viewModel.getFavorite ().removeObserver ( this );
+                        //populateUI ( favoriteEntry );
+                    }
+                } );
             }
+        }
 
+        //TODO: Create a method that will change button image to yellow star when clicked
+        //      and save the movie in favorite list which will show in MainActivity
+        //TODO: Add code that will add movie to FavoriteList when star is clicked...similar to
+        //      the onSavedButtonClicked
+        //TODO: Yellow star must change to white when clicked and UI is updated that (movie must be
+        //      removed from the list when user returns  MainActivity)
 
-        } );**/
+        mFavoriteButton.setOnClickListener ( new View.OnClickListener () {
+            @Override
+            public void onClick(View v) {
+                mFavoriteButton.setImageResource ( R.drawable.yellow_star );
 
-       initViews ();
+               /**final FavoriteEntry favoriteEntry = new FavoriteEntry(mId,overview,voteAverage,releaseDate, posterPath);
+               AppExecutors.getInstance().diskIO().execute( new Runnable() {
+               @Override
+               public void run() {
+               if (mId == DEFAULT_MOVIE_ID) {
+               // insert new  movie
+               mDb.favoriteDao().insertFavorite (favoriteEntry);
+               } else {
+               //update favorite list
+               favoriteEntry.setId(mId);
+               mDb.favoriteDao ().updateFavorite(favoriteEntry);
+               }
+               finish();
+               }
+               });**/
+
+            }
+        } );
+
     }
 
-   /** private void setFavoriteFabIcon() {
-        boolean inFavorites = checkFavorites(mMovie.getId());
-        ImageView addToFav = findViewById(R.id.fab);
+//TODO: DELETE THIS WHEN ROOM WORKS
 
-        if (inFavorites) {
-            addToFav.setImageResource(R.drawable.yellow_star);
-        } else {
-            addToFav.setImageResource(R.drawable.ic_star_white_24dp);
-        }
-    }**/
+    /** Setup FAB to open EditorActivity
+     final FloatingActionButton fab =  findViewById(R.id.fab);
+     fab.setOnClickListener(new View.OnClickListener() {
+    @Override public void onClick(View view) {
+    Log.d(DEBUG_TAG,"OnCreate: fab.onClick");
+
+    ContentResolver resolver = view.getContext().getContentResolver();
+    ContentValues values = new ContentValues();
+    // If the isFavorite equal to true, the Current Movie will be added to the Favorite Movie List;**/
+    /**if (isFavorite == true){
+     /**  mFavoriteMovieUri = FavoriteMovieEntry.buildMovieDetailsUri(id);
+     resolver.insert(
+     mFavoriteMovieUri,
+     values
+     );
+     //saveFavorite ();**/
+    //setFavoriteFabIcon ();
+    //if(isMovieInDB ( resolver, mMovie )){
+    /** isMovieInDB ( resolver, mMovie);
+     changeMovieStatus ( resolver, mMovie, false );
+     /**fab.setImageResource(R.drawable.yellow_star);
+     Toast.makeText(mContext, "Movie is now in Favorite list", Toast.LENGTH_SHORT).show();
+     mContext.getContentResolver().notifyChange(mFavoriteMovieUri, null);
+     } else {
+     // Not a favorite
+     //setFavoriteFabIcon ();
+     /**favoriteDBHelper = new FavoriteDBHelper ( mContext );
+     favoriteDBHelper.deleteFavorite ( id );
+     fab.setImageResource(R.drawable.ic_star_white_24dp);
+     Toast.makeText(mContext, "Movie not in Favorite List", Toast.LENGTH_SHORT).show();
+     }
+     });**/
+
+    //TODO: DELETE THIS WHEN ROOM WORKS
+
+    /** SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences ( getApplicationContext () );
+     materialFavoriteButton.setOnFavoriteChangeListener ( new MaterialFavoriteButton.OnFavoriteChangeListener () {
+    @Override public void onFavoriteChanged(MaterialFavoriteButton buttonView, boolean favorite) {
+    if (favorite) {
+    SharedPreferences.Editor editor = getSharedPreferences
+    ( "com.example.android.popmoviesearchstage2.DetailsActivity", MODE_PRIVATE ).edit ();
+    editor.putBoolean ( "Favorite Added", true );
+    materialFavoriteButton.setImageResource(R.drawable.yellow_star);
+    editor.apply ();
+    saveFavorite ();
+    Snackbar.make ( buttonView, "Added to Favorite", Snackbar.LENGTH_SHORT ).show ();
+    } else {
+    int id = mMovie.getId ();
+    favoriteDBHelper = new FavoriteDBHelper ( mContext );
+    favoriteDBHelper.deleteFavorite ( id );
+    SharedPreferences.Editor editor = getSharedPreferences
+    ( "com.example.android.popmoviesearchstage2.DetailsActivity", MODE_PRIVATE ).edit ();
+    editor.putBoolean ( "Favorite Removed", true );
+    materialFavoriteButton.setImageResource(R.drawable.ic_favorite_border_white_24dp);
+    editor.apply ();
+    Snackbar.make ( buttonView, "Removed from Favorite", Snackbar.LENGTH_SHORT ).show ();
+
+    }
+    }
 
 
-    /**private boolean checkFavorites(int id) {
-
-        Uri uri = FavoriteMovieEntry.buildMovieDetailsUri (id );
-        ContentResolver resolver = this.getContentResolver();
-        Cursor cursor = null;
-
-        try {
-
-            cursor = resolver.query(uri, null, null, null, null);
-            if (cursor.moveToFirst())
-                return true;
-
-        } finally {
-
-            if (cursor != null)
-                cursor.close();
-
-        }
-
-        return false;
-    }**/
+    } );**/
 
     public void showMovieDetails() {
         Log.d ( DEBUG_TAG, "DetailsActivity showMovieDetails" );
-        String releaseDate=( mMovie.getReleaseDate());
-        releaseDate =getYear ( releaseDate );
-        dateTextView.setText  (releaseDate);
+        String releaseDate = (mMovie.getReleaseDate ());
+        releaseDate = getYear ( releaseDate );
+        dateTextView.setText ( releaseDate );
         ratingTextView.setText ( mMovie.getVoteAverage ().toString () );
         overviewTextView.setText ( mMovie.getOverview () );
         titleTextView.setText ( mMovie.getTitle () );
 
         //Intent intent = getIntent ();
 
-        posterPath = POSTER_PATH +(mMovie.getPosterPath ());
+        posterPath = POSTER_PATH + (mMovie.getPosterPath ());
         //posterPath =intent.getStringExtra ( DetailsActivity.EXTRA_POSTER );
         Picasso.with ( mContext ).setLoggingEnabled ( true );
 
-        Picasso.with ( posterImageView.getContext ())
+        Picasso.with ( posterImageView.getContext () )
                 .load ( posterPath )
                 .into ( posterImageView );
 
@@ -327,10 +384,10 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
             call.enqueue ( new Callback<TrailerResponse> () {
 
                 @Override
-                   public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
+                public void onResponse(Call<TrailerResponse> call, Response<TrailerResponse> response) {
                     Log.d ( DEBUG_TAG, "DetailsActivity onResponse Trailers" );
                     mTrailerList = response.body ().getResults ();
-                    mTrailerAdapter.loadTrailers (mTrailerList, mContext);
+                    mTrailerAdapter.loadTrailers ( mTrailerList, mContext );
                     trailerListRecyclerView.smoothScrollToPosition ( 0 );
 
 
@@ -350,76 +407,83 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
     }
 
     public void saveFavorite() {
-        Log.d ( DEBUG_TAG, "DetailsActivity SaveFavorite" );
-        ContentValues values = new  ContentValues();
-        favoriteDBHelper = new FavoriteDBHelper ( mContext );
-        favoriteMovies = new Movie ();
-        int id = getIntent ().getExtras ().getInt ( "id" );
-        Double voteAverage = getIntent ().getExtras ().getDouble ( "vote_average" );
-        String movieTitle = getIntent ().getExtras ().getString ( "original_title" );
-        String releaseDate = getIntent ().getExtras ().getString ( "release_date" );
-        String posterPath = getIntent ().getExtras ().getString ( "poster_path" );
+        //check if movieIsInDB
 
 
-        // Read from input fields
-        // Use trim to eliminate leading or trailing white space
-        ///int id = Integer.parseInt ( favoriteMovieId.getText ().toString ().trim() );
-        //Double voteAverage = Double.parseDouble ( favoriteRating.toString ().trim() );
-        //String movieTitle = favoriteMovieTitle.getText ().toString ().trim ();
-        //String releaseDate = favoriteReleaseDate.getText ().toString ().trim ();
-
-        favoriteMovies.setId ( id );
-        favoriteMovies.setTitle ( movieTitle );
-        favoriteMovies.setVoteAverage(voteAverage);
-        favoriteMovies.setReleaseDate ( releaseDate );
-        favoriteMovies.setPosterPath ( posterPath );
-        favoriteDBHelper.addFavorites ( favoriteMovies );
-
-
-       /** posterPath = POSTER_PATH +(mMovie.getPosterPath ());
-        Picasso.with ( mContext ).setLoggingEnabled ( true );
-
-        Picasso.with ( posterImageView.getContext ())
-                .load ( posterPath )
-                .into ( posterImageView );**/
-
-        // Determine if this is a new or existing item  by checking if mFavoriteMovieUri is null or not
-        if (mFavoriteMovieUri == null) {
-            // This is to insert a new item into the provider, returning the content URI for
-            // the new movie.
-            Uri newUri = getContentResolver().insert(FavoriteMovieEntry.CONTENT_URI, values);
-
-            // Show a toast message depending on whether or not the insertion was successful.
-            if (newUri == null) {
-                // If the new content URI is null, then there was an error with insertion.
-                Toast.makeText(this, getString(R.string.insert_failed),
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                // Otherwise, the insertion was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.insert_successful),
-                        Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            // Otherwise this is an EXISTING Movie in the favorite List, so update the Favorite Movie List
-            // with content URI: mFavoriteMovieUri and pass in the new ContentValues.
-            // Pass in null for the selection and selection args because mFavoriteMovieUri
-            // will already identify the correct row in the database that we want to modify.
-            int rowsAffected = getContentResolver().update(mFavoriteMovieUri, values, null, null);
-
-            // Show a toast message depending on whether or not the update was successful.
-            if (rowsAffected == 0) {
-                // If no rows were affected, then there was an error with the update.
-                Toast.makeText(this, getString(R.string.update_failed),
-                        Toast.LENGTH_SHORT).show();
-            } else {
-                // Otherwise, the update was successful and we can display a toast.
-                Toast.makeText(this, getString(R.string.update_successful),
-                        Toast.LENGTH_SHORT).show();
-            }
-        }
-
-        finish();
     }
+    /**Log.d ( DEBUG_TAG, "DetailsActivity SaveFavorite" );
+     ContentValues values = new  ContentValues();
+     favoriteDBHelper = new FavoriteDBHelper ( mContext );
+     favoriteMovies = new Movie ();
+     int id = getIntent ().getExtras ().getInt ( "id" );
+     Double voteAverage = getIntent ().getExtras ().getDouble ( "vote_average" );
+     String movieTitle = getIntent ().getExtras ().getString ( "original_title" );
+     String releaseDate = getIntent ().getExtras ().getString ( "release_date" );
+     String posterPath = getIntent ().getExtras ().getString ( "poster_path" );
+
+
+     // Read from input fields
+     // Use trim to eliminate leading or trailing white space
+     ///int id = Integer.parseInt ( favoriteMovieId.getText ().toString ().trim() );
+     //Double voteAverage = Double.parseDouble ( favoriteRating.toString ().trim() );
+     //String movieTitle = favoriteMovieTitle.getText ().toString ().trim ();
+     //String releaseDate = favoriteReleaseDate.getText ().toString ().trim ();
+
+     favoriteMovies.setId ( id );
+     favoriteMovies.setTitle ( movieTitle );
+     favoriteMovies.setVoteAverage(voteAverage);
+     favoriteMovies.setReleaseDate ( releaseDate );
+     favoriteMovies.setPosterPath ( posterPath );
+     favoriteDBHelper.addFavorites ( favoriteMovies );**/
+
+
+    /** posterPath = POSTER_PATH +(mMovie.getPosterPath ());
+     Picasso.with ( mContext ).setLoggingEnabled ( true );
+
+     Picasso.with ( posterImageView.getContext ())
+     .load ( posterPath )
+     .into ( posterImageView );**/
+
+    // Determine if this is a new or existing item  by checking if mFavoriteMovieUri is null or not
+
+    /**
+     * if (mFavoriteMovieUri == null) {
+     * // This is to insert a new item into the provider, returning the content URI for
+     * // the new movie.
+     * Uri newUri = getContentResolver().insert(FavoriteMovieEntry.CONTENT_URI, values);
+     * <p>
+     * // Show a toast message depending on whether or not the insertion was successful.
+     * if (newUri == null) {
+     * // If the new content URI is null, then there was an error with insertion.
+     * Toast.makeText(this, getString(R.string.insert_failed),
+     * Toast.LENGTH_SHORT).show();
+     * } else {
+     * // Otherwise, the insertion was successful and we can display a toast.
+     * Toast.makeText(this, getString(R.string.insert_successful),
+     * Toast.LENGTH_SHORT).show();
+     * }
+     * } else {
+     * // Otherwise this is an EXISTING Movie in the favorite List, so update the Favorite Movie List
+     * // with content URI: mFavoriteMovieUri and pass in the new ContentValues.
+     * // Pass in null for the selection and selection args because mFavoriteMovieUri
+     * // will already identify the correct row in the database that we want to modify.
+     * int rowsAffected = getContentResolver().update(mFavoriteMovieUri, values, null, null);
+     * <p>
+     * // Show a toast message depending on whether or not the update was successful.
+     * if (rowsAffected == 0) {
+     * // If no rows were affected, then there was an error with the update.
+     * Toast.makeText(this, getString(R.string.update_failed),
+     * Toast.LENGTH_SHORT).show();
+     * } else {
+     * // Otherwise, the update was successful and we can display a toast.
+     * Toast.makeText(this, getString(R.string.update_successful),
+     * Toast.LENGTH_SHORT).show();
+     * }
+     * }
+     * <p>
+     * finish();
+     * }
+     **/
 
     public void loadReviews() {
         Log.d ( DEBUG_TAG, "DetailsActivity loadReviews" );
@@ -442,7 +506,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
                 public void onResponse(Call<ReviewResponse> call, Response<ReviewResponse> response) {
                     Log.d ( DEBUG_TAG, "DetailsActivity onResponseReviews" );
                     mReviewList = response.body ().getResults ();
-                    mReviewAdapter.loadReviews (mReviewList, mContext);
+                    mReviewAdapter.loadReviews ( mReviewList, mContext );
                     reviewRecyclerView.smoothScrollToPosition ( 0 );
 
                 }
@@ -477,8 +541,8 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         return super.onOptionsItemSelected ( item );
     }
-
-    @Override
+}
+    /**@Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Log.d (DEBUG_TAG, "DetailsActivity onCreateLoader");
         // Since the favorite list shows the poster, rating and release date attributes,
@@ -487,7 +551,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
                 FavoriteMovieEntry._ID,
                 FavoriteMovieEntry.COLUMN_MOVIE_ID,
                 FavoriteMovieEntry.COLUMN_TITLE,
-                //FavoriteMovieEntry.COLUMN_POSTER_PATH,
+                FavoriteMovieEntry.COLUMN_POSTER_PATH,
                 FavoriteMovieEntry.COLUMN_VOTE_AVERAGE,
                 FavoriteMovieEntry.COLUMN_POSTER_PATH};
 
@@ -525,9 +589,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
            String movieTitle = cursor.getString(titleColumnIndex);
            String poster = cursor.getString(posterPathColumnIndex);
            String vote = cursor.getString(voteAverageColumnIndex);
-           String releaseDate = cursor.getString(releaseDateColumnIndex);
+           String releaseDate = cursor.getString(releaseDateColumnIndex);**/
 
-            /** Update the views on the screen with the values from the database /**/
+            /** Update the views on the screen with the values from the database /
            favoriteMovieId.setText ( movieId );
            favoriteMovieTitle.setText ( movieTitle );
            favoriteRating.setText(vote);
@@ -535,9 +599,9 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
 
         }
 
-    }
+    }**/
 
-    @Override
+    /**@Override
     public void onLoaderReset(Loader<Cursor> loader) {
         Log.d (DEBUG_TAG, "DetailsActivity onLoadReset");
         favoriteMovieTitle.setText("");
@@ -596,25 +660,7 @@ public class DetailsActivity extends AppCompatActivity implements LoaderManager.
         }
     }
 }
-
-/**        if (intent == null || !intent.hasExtra(EXTRA_MOVIE)) {
- throw new NullPointerException("Movie cannot be empty");
- }
-
- if (savedInstanceState == null) {
- Movie movie = intent.getParcelableExtra(EXTRA_MOVIE);
- ArrayList<Trailer> trailer = intent.getParcelableArrayListExtra(EXTRA_VIDEO);
- ArrayList<Review> reviews = intent.getParcelableArrayListExtra(EXTRA_REVIEW);
-
- DetailsFragment detailsFragment = DetailsFragment.newInstance(movie, trailer, reviews);
- // Add the fragment to its container using a FragmentManager and a Transaction
- FragmentManager fragmentManager = getSupportFragmentManager();
- fragmentManager.beginTransaction()
- .replace(R.id.movie_detail_container, detailsFragment)
- .commit();
-
- }**/
-
+**/
 
 
 

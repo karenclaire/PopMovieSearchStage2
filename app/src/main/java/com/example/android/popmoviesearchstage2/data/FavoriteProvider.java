@@ -1,76 +1,71 @@
 package com.example.android.popmoviesearchstage2.data;
 
-import android.content.ContentProvider;
-import android.content.ContentUris;
-import android.content.ContentValues;
-import android.content.UriMatcher;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.net.Uri;
-import android.support.annotation.NonNull;
-import android.support.annotation.Nullable;
-import android.util.Log;
-
-import com.example.android.popmoviesearchstage2.data.FavoriteContract.FavoriteMovieEntry;
-import com.example.android.popmoviesearchstage2.model.Movie;
-
-public class FavoriteProvider extends ContentProvider {
+//TODO: 1) Create Favorite Entry
+// TODO:2) Create FavoriteDao
+//TODO: 3) Create Favorite AppDatabase
+//TODO: 3) Create DetailsViewModel that contains an Observer if MovieIsInDb Status (UX) that will
+//          trigger change in the UI (must show if it is favorite or not)
+//TODO: 4)Create ViewModelFactory
+//TODO: 5) Create MainViewModel
+// TODO: 6) Fix DetailsActivity
+// TODO: Delete this when Room works
+//public class FavoriteProvider extends ContentProvider {
 
     /**
      * Tag for the log messages
      */
-    public static final String LOG_TAG = FavoriteProvider.class.getSimpleName();
+    ///public static final String LOG_TAG = FavoriteProvider.class.getSimpleName();
 
     //Mental note: tag debugs with a different TAG
-    private static final String DEBUG_TAG = "DebugStuff";
+    //private static final String DEBUG_TAG = "DebugStuff";
 
-    Movie movie;
+    //Movie movie;**/
 
     /**
      * URI matcher code for the content URI for the movie table
-     */
-        private static final int FAVORITE_MOVIE = 100;
+     **/
+    //    private static final int FAVORITE_MOVIE = 100;
 
     /**
      * URI matcher code for the content URI for a single item in the movie table
-     */
+     **/
 
-    static final int FAVORITE_MOVIE_DETAIL = 101;
+    //static final int FAVORITE_MOVIE_DETAIL = 101;
 
-    static final int MOVIE_ID = 107;
+    //static final int MOVIE_ID = 107;
 
 
     /**
      * UriMatcher object to match a content URI to a corresponding code.
      * The input passed into the constructor represents the code to return for the root URI.
      * It's common to use NO_MATCH as the input for this case.
-     */
-    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+     **/
+    //private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
 
 
     // Static initializer. This is run the first time anything is called from this class.
-    static {
+    //static {
         // The calls to addURI() go here, for all of the content URI patterns that the provider
         // should recognize. All paths added to the UriMatcher have a corresponding code to return
         // when a match is found.
 
         // The content URI of the form "content://com.example.android.popmoviesearchstage2/will map to the
         // integer code. This URI is used to provide access to MULTIPLE rows of the movie tables.
-        sUriMatcher.addURI(FavoriteContract.CONTENT_AUTHORITY, FavoriteContract.PATH_MOVIE,FAVORITE_MOVIE);
+      //  sUriMatcher.addURI(FavoriteContract.CONTENT_AUTHORITY, FavoriteContract.PATH_MOVIE,FAVORITE_MOVIE);
 
         // This URI is used to provide access to ONE single row of the chosen movie table.
         // In this case, the "#" wildcard is used where "#" can be substituted for an integer.
         //
-       sUriMatcher.addURI(FavoriteContract.CONTENT_AUTHORITY, FavoriteContract.PATH_FAVORITE
-                       + "/#" , FAVORITE_MOVIE_DETAIL);
-    }
+     //  sUriMatcher.addURI(FavoriteContract.CONTENT_AUTHORITY, FavoriteContract.PATH_FAVORITE
+       //                + "/#" , FAVORITE_MOVIE_DETAIL);
+    //}
 
     /**
      * Database helper object
-     */
-    private FavoriteDBHelper mFavoriteDbHelper;
+     **/
+    //private FavoriteDBHelper mFavoriteDbHelper;
 
-    @Override
+    /**@Override
     public boolean onCreate() {
         mFavoriteDbHelper = new FavoriteDBHelper(getContext());
         return true;
@@ -170,7 +165,8 @@ public class FavoriteProvider extends ContentProvider {
         return returnUri;
 
 
-    }
+    }**/
+
        /** public  Uri addFavorites(Uri uri) {
         // Get writable database
         SQLiteDatabase database = mFavoriteDbHelper.getWritableDatabase();
@@ -208,7 +204,7 @@ public class FavoriteProvider extends ContentProvider {
     }**/
 
 
-    @Override
+/**    @Override
     public int delete(@NonNull Uri uri, @Nullable String selection, @Nullable String[] selectionArgs) {
         SQLiteDatabase database = mFavoriteDbHelper.getWritableDatabase ();
         int favoriteMovieRemoved;
@@ -246,3 +242,4 @@ public class FavoriteProvider extends ContentProvider {
 
 
 }
+**/
