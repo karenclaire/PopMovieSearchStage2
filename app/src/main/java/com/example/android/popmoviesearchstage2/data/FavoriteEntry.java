@@ -3,11 +3,6 @@ package com.example.android.popmoviesearchstage2.data;
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-
 @Entity(tableName = "favorite")
 public class FavoriteEntry {
 
@@ -23,7 +18,7 @@ public class FavoriteEntry {
         this.id = id;
         this.overview = overview;
         this.voteAverage = voteAverage;
-        this.releaseDate = getYear (releaseDate);
+        this.releaseDate = releaseDate;
         this.posterPath = posterPath;
     }
 
@@ -63,7 +58,7 @@ public class FavoriteEntry {
     }
 
 
-    public static String getYear(String dateString) {
+    /**public static String getYear(String dateString) {
         Calendar calendar = Calendar.getInstance ();
         SimpleDateFormat parser = new SimpleDateFormat ( "yyyy-MM-dd" );
         Date date = null;
@@ -74,7 +69,7 @@ public class FavoriteEntry {
         }
         calendar.setTime ( date );
         return String.valueOf ( calendar.get ( Calendar.YEAR ) );
-    }
+    }**/
 
 }
 

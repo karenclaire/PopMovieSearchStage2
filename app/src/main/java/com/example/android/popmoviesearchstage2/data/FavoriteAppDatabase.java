@@ -3,10 +3,13 @@ package com.example.android.popmoviesearchstage2.data;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.util.Log;
 
-@Database(entities = {FavoriteEntry.class}, version = 1, exportSchema = false)
+@Database(entities = {FavoriteEntry.class}, version = 2, exportSchema = false)
+
+@TypeConverters(DateConverter.class)
 
 public abstract class FavoriteAppDatabase extends RoomDatabase {
 

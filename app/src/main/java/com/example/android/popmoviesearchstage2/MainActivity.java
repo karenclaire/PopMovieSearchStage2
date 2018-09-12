@@ -199,7 +199,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
             layoutManager = new GridLayoutManager(this, 4);
             mRecyclerView.setLayoutManager(layoutManager);
         }
-// you don't need so many breakponts , you can go step by step using F8, when you want to go into method F7
+       // you don't need so many breakponts , you can go step by step using F8, when you want to go into method F7
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         mMovieAdapter = new MovieAdapter(mContext, moviesList);
@@ -407,6 +407,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
         }
     }
 
+    //TODO: Fix this code
     private void setupViewModel() {
         MainViewModel viewModel = ViewModelProviders.of(this).get(MainViewModel.class);
         viewModel.getFavoriteEntry ().observe(this, new Observer<List<FavoriteEntry>> () {

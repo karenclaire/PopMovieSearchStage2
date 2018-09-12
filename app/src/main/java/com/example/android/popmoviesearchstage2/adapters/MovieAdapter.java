@@ -160,46 +160,13 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
                      int position = getAdapterPosition ();
                      if (position != mRecyclerView.NO_POSITION) {
 
-                         /**Movie movieInformation = new Movie ( currentMovie.getId (), currentMovie.getTitle (),
-                          currentMovie.getReleaseDate (), currentMovie.getOverview (),
-                          currentMovie.getVoteAverage (), currentMovie.getPosterPath () );
-
-                          Intent intent = new Intent ( mContext, DetailsActivity.class );
-                          intent.putExtra ( DetailsActivity.EXTRA_MOVIE, movieInformation );
-                          //intent.putExtra(DetailsActivity.EXTRA_POSTER, poster);
-                          intent.putExtra ( DetailsActivity.EXTRA_POSTER, POSTER_PATH + currentMovie.getPosterPath () );
-                          mContext.startActivity ( intent );**/
-
-
-
-
-                          /**currentMovie = new Movie(currentMovie.getId (), currentMovie.getTitle (),
-                                  currentMovie.getReleaseDate (), currentMovie.getOverview (),
-                                  currentMovie.getVoteAverage (), currentMovie.getPosterPath ());**/
-
-                         /**Intent intent = new Intent ( mContext, DetailsActivity.class );
-                         intent.putExtra ( DetailsActivity.EXTRA_MOVIE, currentMovie );
-                         intent.putExtra ( DetailsActivity.EXTRA_POSTER, POSTER_PATH + currentMovie.getPosterPath () );
-                         mContext.startActivity ( intent );**/
-
                           Context context = view.getContext();
                           Intent intent = new Intent ( context, DetailsActivity.class );
-                         intent.putExtra ( DetailsActivity.EXTRA_MOVIE, (Parcelable) moviesList.get(position));
+                          intent.putExtra ( DetailsActivity.EXTRA_MOVIE, (Parcelable) moviesList.get(position));
                           // intent.putExtra ( DetailsActivity.EXTRA_POSTER, moviesList.get(position).getPosterPath () );
                           context.startActivity ( intent );
 
-                         /**Movie currentMovie = moviesList.get ( position );
-                         Intent intent = new Intent ( mContext, DetailsActivity.class );
-                         intent.putExtra ( "vote_average", currentMovie.getVoteAverage () );
-                         intent.putExtra ( "released_date", currentMovie.getReleaseDate () );
-                         intent.putExtra ( "poster_path", currentMovie.getPosterPath () );
-                         intent.putExtra ( "overview", currentMovie.getOverview () );
-                         intent.addFlags ( Intent.FLAG_ACTIVITY_NEW_TASK );
-                         mContext.startActivity ( intent );**/
                      }
-
-
-                     //}
                  }
              } );
          }
