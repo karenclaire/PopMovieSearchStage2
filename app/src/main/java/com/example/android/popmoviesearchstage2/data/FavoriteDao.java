@@ -25,8 +25,8 @@ public interface FavoriteDao {
     @Delete
     void deleteFavorite(FavoriteEntry favoriteEntry);
 
-    @Query("SELECT * FROM favorite WHERE id = :id")
-    LiveData<FavoriteEntry> getFavoritesById(int id);
+    @Query("SELECT * FROM favorite WHERE movieId = :movieId")
+    LiveData<FavoriteEntry> getFavoritesById(int movieId);
 
     //TODO: Include methods in DetailsActivity
 }

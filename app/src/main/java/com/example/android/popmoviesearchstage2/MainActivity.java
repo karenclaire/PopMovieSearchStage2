@@ -33,7 +33,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
@@ -59,6 +58,7 @@ import com.example.android.popmoviesearchstage2.model.Movie;
 import com.example.android.popmoviesearchstage2.model.MovieResponse;
 import com.example.android.popmoviesearchstage2.retrofit.MovieInterface;
 import com.example.android.popmoviesearchstage2.retrofit.RetrofitClient;
+import com.facebook.stetho.Stetho;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -167,6 +167,9 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        //TODO: Add  Stetho.initializeWithDefaults(this); to MainActivity
+        Stetho.initializeWithDefaults(this);
+
         initViews();
 
 
@@ -227,9 +230,12 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
         mMovieAdapter = new MovieAdapter(mContext, moviesList);
         mRecyclerView.setAdapter(mMovieAdapter);
         mMovieAdapter.notifyDataSetChanged();
-        favoriteDBHelper = new FavoriteDBHelper (mContext);
+        //favoriteDBHelper = new FavoriteDBHelper (mContext);
 
-        getAllFavoriteMovies();
+        mDb = FavoriteAppDatabase.getInstance(getApplicationContext());
+        setupViewModel ();
+
+        //getAllFavoriteMovies();
     }
 
     //Helper method to get Activity context
@@ -414,7 +420,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
             @Override
             public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
                 Log.d(DEBUG_TAG, "Updating list of tasks from LiveData in ViewModel");
-               // mMovieAdapter.setTask(favoriteEntries);
+                //mMovieAdapter.loadFavoriteMovies (favoriteEntries);
             }
         });
     }
@@ -422,7 +428,8 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
     //TODO: Add method that will retrieve all movies using Room
     //TODO: Add method that will populateTheUI(or has this been covered?)
 
-    public void getAllFavoriteMovies(){
+    //TODO: Delete this part
+   /** public void getAllFavoriteMovies(){
         new AsyncTask <Void, Void, Void>(){
 
             @Override
@@ -437,6 +444,6 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
                 super.onPostExecute ( aVoid );
                 mMovieAdapter.notifyDataSetChanged ();
             }
-        }.execute ( );
-    }
+        }.execute ( )
+    };**/
 }

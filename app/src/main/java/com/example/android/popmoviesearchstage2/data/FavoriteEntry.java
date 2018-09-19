@@ -1,32 +1,49 @@
 package com.example.android.popmoviesearchstage2.data;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Ignore;
 import android.arch.persistence.room.PrimaryKey;
 
 @Entity(tableName = "favorite")
 public class FavoriteEntry {
 
     @PrimaryKey(autoGenerate = true)
-    private int id;
+    private int id; // ID
+    private int movieId;  // movieId :)
     private Double voteAverage;
     private String posterPath;
     private String overview;
     private String releaseDate;
 
-
-    public FavoriteEntry (int id, String overview, Double voteAverage, String releaseDate, String posterPath){
-        this.id = id;
+    @Ignore
+    public FavoriteEntry (int movieId, String overview, Double voteAverage, String releaseDate, String posterPath){
+        this.movieId = movieId;
         this.overview = overview;
         this.voteAverage = voteAverage;
         this.releaseDate = releaseDate;
         this.posterPath = posterPath;
     }
 
-    public int getId() {
-        return id;
-    }
-    public void setId(Integer id) {
+    public FavoriteEntry (int id, int movieId, String overview, Double voteAverage, String releaseDate, String posterPath){
         this.id = id;
+        this.movieId = movieId;
+        this.overview = overview;
+        this.voteAverage = voteAverage;
+        this.releaseDate = releaseDate;
+        this.posterPath = posterPath;
+    }
+
+
+    public int getId() {return id; }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+    public int getMovieId() {
+        return movieId;
+    }
+    public void setMovieId(Integer movieId) {
+        this.movieId = movieId;
     }
 
     public Double getVoteAverage() {

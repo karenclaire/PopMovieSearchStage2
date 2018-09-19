@@ -16,6 +16,7 @@ import android.widget.TextView;
 
 import com.example.android.popmoviesearchstage2.DetailsActivity;
 import com.example.android.popmoviesearchstage2.R;
+import com.example.android.popmoviesearchstage2.data.FavoriteEntry;
 import com.example.android.popmoviesearchstage2.model.Movie;
 import com.squareup.picasso.Picasso;
 
@@ -64,6 +65,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     private CardView mCardView;
     String poster;
 
+
+    private List <FavoriteEntry> mFavoriteEntry;
 
     private static final int VIEW_TYPE_TOP_RATED = 1;
     private static final int VIEW_TYPE_FAVORITE = 2;
@@ -130,6 +133,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     }
 
+
      public class MovieAdapterViewHolder extends RecyclerView.ViewHolder {
          @BindView(R.id.tv_rating)
          TextView ratingTextView;
@@ -185,6 +189,21 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
 
     }
+
+   //TODO: QUESTIONS TO CONSIDER: Should I have casted this in Live Data? Do I need these...I think not...
+    //I put a this code in conjunction with MainActivity setUpViewModel...
+   /**public List <FavoriteEntry> getFavorite() {
+        return mFavoriteEntry;
+    }**/
+
+    /**
+     * When data changes, this method updates the list of taskEntries
+     * and notifies the adapter to use the new values on it
+     */
+    /**public void loadFavoriteMovies (List<FavoriteEntry> favoriteEntries) {
+        mFavoriteEntry = favoriteEntries;
+        notifyDataSetChanged ();
+    }**/
 
 }
 

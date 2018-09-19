@@ -7,7 +7,7 @@ import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 import android.util.Log;
 
-@Database(entities = {FavoriteEntry.class}, version = 2, exportSchema = false)
+@Database(entities = {FavoriteEntry.class}, version = 1, exportSchema = false)
 
 @TypeConverters(DateConverter.class)
 
