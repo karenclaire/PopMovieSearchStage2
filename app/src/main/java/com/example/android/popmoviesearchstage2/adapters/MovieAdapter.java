@@ -66,7 +66,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
     String poster;
 
 
-    private List <FavoriteEntry> mFavoriteEntry;
+    private FavoriteEntry mFavoriteEntry;
 
     private static final int VIEW_TYPE_TOP_RATED = 1;
     private static final int VIEW_TYPE_FAVORITE = 2;
@@ -190,20 +190,20 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieAdapter
 
     }
 
-   //TODO: QUESTIONS TO CONSIDER: Should I have casted this in Live Data? Do I need these...I think not...
-    //I put a this code in conjunction with MainActivity setUpViewModel...
-   /**public List <FavoriteEntry> getFavorite() {
+   //TODO: QUESTIONS TO CONSIDER: Do I need these...I think not...I put a this code in conjunction
+   // with MainActivity setUpViewModel and DetailsActivity...
+    public FavoriteEntry getFavorite(List<FavoriteEntry> favoriteEntries) {
         return mFavoriteEntry;
-    }**/
+    }
 
     /**
      * When data changes, this method updates the list of taskEntries
      * and notifies the adapter to use the new values on it
      */
-    /**public void loadFavoriteMovies (List<FavoriteEntry> favoriteEntries) {
+    public void loadFavoriteMovies (FavoriteEntry favoriteEntries) {
         mFavoriteEntry = favoriteEntries;
         notifyDataSetChanged ();
-    }**/
+    }
 
 }
 

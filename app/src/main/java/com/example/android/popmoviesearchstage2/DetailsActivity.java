@@ -4,7 +4,9 @@ import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -156,7 +158,7 @@ public class DetailsActivity extends AppCompatActivity {
     private Movie mMovie;
     private String posterPath;
 
-    // Constant for default movie id to be used when not in update mode
+    // Constant for default movie id to be used we check if added to favorite
     private static final int DEFAULT_MOVIE_ID = 1;
     private int mId;
 
@@ -205,6 +207,8 @@ public class DetailsActivity extends AppCompatActivity {
         }
 
         //TODO: Fix this part so that : Favorite movie is shown when Favorites is chosen in settings
+        //TODO: Question: this part gets the movie from the DB right? --I am getting confused and
+        // Am I still missing the part of checking if the movie is the DB? :D
         try {
 
             if (intent.hasExtra ( FAVORITE )) {
@@ -218,12 +222,12 @@ public class DetailsActivity extends AppCompatActivity {
                 final DetailsViewModel viewModel
                         = ViewModelProviders.of ( this, factory ).get ( DetailsViewModel.class );
 
-                //  Observe the LiveData object in the ViewModel. Use it also when removing the observer
+                //  Observe the LiveData object in the ViewModel.
                 viewModel.getFavorite ().observe ( this, new Observer<FavoriteEntry> () {
                     @Override
                     public void onChanged(@Nullable FavoriteEntry favoriteEntry) {
                         viewModel.getFavorite ();
-                        //populateUI ( favoriteEntry );
+                        populateUI (favoriteEntry );
                     }
                 } );
             }
@@ -274,24 +278,27 @@ public class DetailsActivity extends AppCompatActivity {
                 Log.d ( DEBUG_TAG, "Details Activity: OnClickListener for Favorite star thing  works" );
                 //boolean favoriteIsChecked = false;
                 //if (favoriteIsChecked == true) {
-                    mFavoriteButton.setImageResource ( R.drawable.yellow_star_small );
-
+                   // mFavoriteButton.setImageResource ( R.drawable.yellow_star_small );
 
                     //TODO: Check this method...How do I make this go back to a plain white star if movie is unmarked as Favorite
                     final FavoriteEntry favoriteEntry = new FavoriteEntry ( mId, overview, voteAverage, releaseDate, posterPath );
                     AppExecutors.getInstance ().diskIO ().execute ( new Runnable () {
                         @Override
                         public void run() {
+                            Log.d (DEBUG_TAG, "DetailsActivity onCLickListener run() Favorite added or deleted");
                             if (mId == DEFAULT_MOVIE_ID) {
                                 // insert new movie in favorite list
+                                mFavoriteButton.setImageResource ( R.drawable.yellow_star_small );
                                 mDb.favoriteDao ().insertFavorite ( favoriteEntry );
+                                Toast.makeText ( mContext, "Added to Favorite List", Toast.LENGTH_SHORT ).show ();
 
 
                             } else {
                                 favoriteEntry.setId ( mId );
                                 //delete movie from favorite list
                                 mDb.favoriteDao ().deleteFavorite ( favoriteEntry );
-                                //mFavoriteButton.setImageResource ( R.drawable.ic_star_white_24dp );
+                                mFavoriteButton.setImageResource ( R.drawable.ic_star_white_24dp );
+                                Toast.makeText ( mContext, "Removed from Favorite List", Toast.LENGTH_SHORT ).show ();
 
 
                             }
@@ -307,7 +314,25 @@ public class DetailsActivity extends AppCompatActivity {
         } );
       }
 
+    //TODO: QUESTIONS TO CONSIDER: Do I need these...I think not...I put a this code in conjunction
+    // with MainActivity setUpViewModel and MovieAdapter...CONFUSED
+    private void populateUI(FavoriteEntry favoriteEntry) {
+        Log.d ( DEBUG_TAG,"populated UI?" );
+        if (favoriteEntry == null) {
+            return;
+        }
 
+        SharedPreferences sharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        String preferenceSortOrder = sharedPrefs.getString(getString(R.string.pref_sorting_criteria_key),
+                getString(R.string.pref_sorting_criteria_default_value));
+        if (preferenceSortOrder.equals (this.getString(R.string.pref_sorting_criteria_favorite))) {
+            Toast.makeText ( this, "Sort order set to Favorite", Toast.LENGTH_SHORT ).show ();
+         mMovieAdapter.loadFavoriteMovies (favoriteEntry );
+
+
+        }
+
+    }
 
 //TODO: DELETE THIS WHEN ROOM WORKS
 
@@ -416,6 +441,8 @@ public class DetailsActivity extends AppCompatActivity {
 
 
         loadReviews ();
+
+
 
     }
 

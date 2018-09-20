@@ -420,7 +420,7 @@ public class MainActivity extends AppCompatActivity implements  SharedPreference
             @Override
             public void onChanged(@Nullable List<FavoriteEntry> favoriteEntries) {
                 Log.d(DEBUG_TAG, "Updating list of tasks from LiveData in ViewModel");
-                //mMovieAdapter.loadFavoriteMovies (favoriteEntries);
+                mMovieAdapter.getFavorite (favoriteEntries);
             }
         });
     }
